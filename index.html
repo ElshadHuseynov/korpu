@@ -7,6 +7,52 @@
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    /* Splash screen */
+    .splash {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: #0c1a2e;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+
+    .splash.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .splash img {
+      width: 180px;
+      height: 180px;
+      object-fit: contain;
+      animation: splashPulse 1.5s ease-in-out infinite;
+      filter: drop-shadow(0 0 30px rgba(0,229,160,0.3));
+    }
+
+    .splash-text {
+      margin-top: 20px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      animation: splashFade 1.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes splashPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes splashFade {
+      0% { opacity: 0.3; }
+      100% { opacity: 0.7; }
+    }
+
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
@@ -599,6 +645,12 @@
 </head>
 <body>
 
+<!-- Splash screen -->
+<div class="splash" id="splash">
+  <img src="logo.png" alt="KÖRPÜ">
+  <div class="splash-text">Загрузка...</div>
+</div>
+
 <div class="app">
 
   <!-- Header -->
@@ -934,6 +986,13 @@
       document.getElementById('btnMuteVid').classList.toggle('muted', vidMuted);
     }
   }
+
+  // Splash screen — hide after 2 seconds
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('splash').classList.add('hidden');
+    }, 2000);
+  });
 </script>
 
 </body>
