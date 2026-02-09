@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KÖRPÜ — P2P Chat</title>
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-deep: #0a0a0f;
+      --bg-surface: rgba(255,255,255,0.03);
+      --glass: rgba(255,255,255,0.06);
+      --glass-border: rgba(255,255,255,0.08);
+      --accent: #00e5a0;
+      --accent-glow: rgba(0,229,160,0.3);
+      --accent-dim: rgba(0,229,160,0.1);
+      --danger: #ff4d6a;
+      --danger-glow: rgba(255,77,106,0.3);
+      --text: #e8e8ec;
+      --text-dim: rgba(255,255,255,0.4);
+      --text-mid: rgba(255,255,255,0.65);
+      --call-bg: rgba(0,229,160,0.08);
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text);
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Animated background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(0,229,160,0.06) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(100,60,255,0.05) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 80%, rgba(0,150,255,0.04) 0%, transparent 50%);
+      animation: bgShift 20s ease-in-out infinite alternate;
+      z-index: 0;
+    }
+
+    @keyframes bgShift {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      100% { transform: translate(-5%, 3%) rotate(3deg); }
+    }
+
+    /* Grid pattern overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 60px 60px;
+      z-index: 0;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      margin-bottom: 12px;
+    }
+
+    .logo {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .logo span {
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+
+    #statusBadge {
+      font-size: 0.7rem;
+      padding: 4px 12px;
+      border-radius: 100px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--glass-border);
+      color: var(--text-dim);
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 1px;
+      transition: all 0.5s ease;
+    }
+
+    #statusBadge.online {
+      background: var(--accent-dim);
+      border-color: rgba(0,229,160,0.3);
+      color: var(--accent);
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    #statusBadge.connected {
+      background: rgba(100,60,255,0.1);
+      border-color: rgba(100,60,255,0.3);
+      color: #a78bfa;
+      box-shadow: 0 0 15px rgba(100,60,255,0.2);
+    }
+
+    /* Glass card */
+    .card {
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 20px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      margin-bottom: 12px;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card:nth-child(2) { animation-delay: 0.1s; }
+    .card:nth-child(3) { animation-delay: 0.2s; }
+
+    .card-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: rgba(0,229,160,0.4);
+      box-shadow: 0 0 0 3px rgba(0,229,160,0.08);
+      background: rgba(255,255,255,0.06);
+    }
+
+    input[type="text"]::placeholder {
+      color: var(--text-dim);
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #0a0a0f;
+      box-shadow: 0 4px 20px var(--accent-glow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 30px rgba(0,229,160,0.4);
+    }
+
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.06);
+      color: var(--text-mid);
+      border: 1px solid var(--glass-border);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--text);
+    }
+
+    .btn-call {
+      background: var(--accent);
+      color: #0a0a0f;
+      box-shadow: 0 4px 20px var(--accent-glow);
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .btn-call:hover {
+      transform: scale(1.08);
+      box-shadow: 0 6px 30px rgba(0,229,160,0.5);
+    }
+
+    .btn-hangup {
+      background: var(--danger);
+      color: white;
+      box-shadow: 0 4px 20px var(--danger-glow);
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .btn-hangup:hover {
+      transform: scale(1.08);
+      box-shadow: 0 6px 30px rgba(255,77,106,0.5);
+    }
+
+    /* Call controls bar */
+    .call-controls {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 12px;
+      animation: fadeUp 0.3s ease both;
+    }
+
+    .call-controls.active { display: flex; }
+
+    .call-timer {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--accent);
+      letter-spacing: 1px;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .btn-mute {
+      background: rgba(255,255,255,0.08);
+      color: var(--text-mid);
+      border: 1px solid var(--glass-border);
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .btn-mute:hover { background: rgba(255,255,255,0.14); }
+    .btn-mute.muted { background: var(--danger); color: white; border-color: var(--danger); }
+
+    /* Video area */
+    .video-area {
+      display: none;
+      gap: 8px;
+      margin-bottom: 12px;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .video-area.active {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .video-wrap {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid var(--glass-border);
+      aspect-ratio: 4/3;
+    }
+
+    .video-wrap video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .video-label {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-family: 'Space Mono', monospace;
+      background: rgba(0,0,0,0.5);
+      padding: 3px 8px;
+      border-radius: 6px;
+      color: var(--text-mid);
+    }
+
+    /* Messages area */
+    .messages-area {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .messages-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      backdrop-filter: blur(10px);
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.1) transparent;
+    }
+
+    #messages::-webkit-scrollbar { width: 4px; }
+    #messages::-webkit-scrollbar-track { background: transparent; }
+    #messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+    .msg {
+      max-width: 82%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      animation: msgIn 0.3s ease both;
+      word-break: break-word;
+    }
+
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(6px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .msg.sent {
+      align-self: flex-end;
+      background: linear-gradient(135deg, rgba(0,229,160,0.2), rgba(0,229,160,0.08));
+      border: 1px solid rgba(0,229,160,0.15);
+      color: var(--text);
+    }
+
+    .msg.received {
+      align-self: flex-start;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.06);
+      color: var(--text);
+    }
+
+    .msg.system {
+      align-self: center;
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 0.72rem;
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.5px;
+      padding: 6px 0;
+    }
+
+    .msg-time {
+      font-size: 0.6rem;
+      color: var(--text-dim);
+      margin-top: 3px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* Input bar */
+    .input-bar {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      align-items: center;
+    }
+
+    .input-bar input[type="text"] {
+      flex: 1;
+    }
+
+    .btn-send {
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #0a0a0f;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 15px var(--accent-glow);
+    }
+
+    .btn-send:hover {
+      transform: scale(1.06);
+      box-shadow: 0 6px 25px rgba(0,229,160,0.45);
+    }
+
+    /* Incoming call overlay */
+    .incoming-call-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(20px);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .incoming-call-overlay.active {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .incoming-call-card {
+      text-align: center;
+      padding: 40px;
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { filter: drop-shadow(0 0 20px var(--accent-glow)); }
+      50% { filter: drop-shadow(0 0 40px rgba(0,229,160,0.5)); }
+    }
+
+    .incoming-call-card .caller-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #00b8d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #0a0a0f;
+    }
+
+    .incoming-call-card h3 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .incoming-call-card p {
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      margin-bottom: 24px;
+    }
+
+    .incoming-call-buttons {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+    }
+
+    .incoming-call-buttons .btn {
+      width: 56px;
+      height: 56px;
+      padding: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* SVG icons */
+    svg { display: block; }
+
+    /* Responsive */
+    @media (max-width: 540px) {
+      .app { padding: 10px; }
+      .card { padding: 14px; }
+      .video-area.active { grid-template-columns: 1fr; }
+    }
+
+    /* Connection section collapse */
+    .connection-section { transition: all 0.4s ease; overflow: hidden; }
+    .connection-section.collapsed {
+      max-height: 0;
+      margin: 0;
+      padding: 0;
+      border: none;
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">KÖRPÜ</div>
+    <div id="statusBadge">ОФЛАЙН</div>
+  </div>
+
+  <!-- Registration -->
+  <div class="card" id="registerCard">
+    <div class="card-label">Ваш идентификатор</div>
+    <div class="input-row">
+      <input type="text" id="myId" placeholder="Введите ваш ID...">
+      <button class="btn btn-primary" onclick="register()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Войти
+      </button>
+    </div>
+  </div>
+
+  <!-- Connect to peer -->
+  <div class="card connection-section" id="connectCard" style="display:none;">
+    <div class="card-label">Подключение к собеседнику</div>
+    <div class="input-row">
+      <input type="text" id="peerId" placeholder="ID собеседника...">
+      <button class="btn btn-ghost" onclick="connectToPeer()">Подключиться</button>
+      <button class="btn btn-call" onclick="startCall(true)" title="Видеозвонок">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+      </button>
+      <button class="btn btn-call" onclick="startCall(false)" title="Аудиозвонок" style="background:rgba(255,255,255,0.08);color:var(--text-mid);box-shadow:none;border:1px solid var(--glass-border);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Video area -->
+  <div class="video-area" id="videoArea">
+    <div class="video-wrap">
+      <video id="localVideo" autoplay muted playsinline></video>
+      <div class="video-label">Вы</div>
+    </div>
+    <div class="video-wrap">
+      <video id="remoteVideo" autoplay playsinline></video>
+      <div class="video-label">Собеседник</div>
+    </div>
+  </div>
+
+  <!-- Call controls -->
+  <div class="call-controls" id="callControls">
+    <button class="btn btn-mute" id="btnMuteMic" onclick="toggleMute('audio')" title="Микрофон">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+    </button>
+    <button class="btn btn-mute" id="btnMuteVid" onclick="toggleMute('video')" title="Камера">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+    </button>
+    <div class="call-timer" id="callTimer">00:00</div>
+    <button class="btn btn-hangup" onclick="hangup()" title="Завершить">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.11 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+    </button>
+  </div>
+
+  <!-- Messages -->
+  <div class="messages-area">
+    <div class="messages-header">
+      <div class="card-label" style="margin:0;">Сообщения</div>
+    </div>
+    <div id="messages">
+      <div class="msg system">Зарегистрируйтесь, чтобы начать</div>
+    </div>
+  </div>
+
+  <!-- Input bar -->
+  <div class="input-bar">
+    <input type="text" id="msgInput" placeholder="Напишите сообщение..." onkeydown="if(event.key==='Enter')sendMsg()">
+    <button class="btn btn-send" onclick="sendMsg()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+
+</div>
+
+<!-- Incoming call overlay -->
+<div class="incoming-call-overlay" id="incomingCallOverlay">
+  <div class="incoming-call-card">
+    <div class="caller-avatar" id="callerAvatar">?</div>
+    <h3 id="callerName">Входящий звонок</h3>
+    <p>Ожидание ответа...</p>
+    <div class="incoming-call-buttons">
+      <button class="btn btn-hangup" onclick="rejectCall()" style="width:56px;height:56px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/></svg>
+      </button>
+      <button class="btn btn-call" onclick="answerCall()" style="width:56px;height:56px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.8.3 1.58.52 2.34a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.76.22 1.54.4 2.34.52A2 2 0 0 1 22 16.92z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Audio element for ringtone simulation -->
+<audio id="remoteAudio" autoplay></audio>
+
+<script>
+  let peer, conn, localStream, currentCall;
+  let incomingCall = null;
+  let callTimerInterval = null;
+  let callSeconds = 0;
+  let micMuted = false, vidMuted = false;
+
+  // --- UI helpers ---
+  function setStatus(text, cls) {
+    const b = document.getElementById('statusBadge');
+    b.textContent = text;
+    b.className = cls || '';
+  }
+
+  function addMsg(text, type) {
+    const el = document.getElementById('messages');
+    const d = document.createElement('div');
+    d.className = 'msg ' + type;
+    if (type === 'system') {
+      d.textContent = text;
+    } else {
+      const now = new Date();
+      const t = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+      d.innerHTML = text + `<div class="msg-time">${t}</div>`;
+    }
+    el.appendChild(d);
+    el.scrollTop = el.scrollHeight;
+  }
+
+  // --- Registration ---
+  function register() {
+    const id = document.getElementById('myId').value.trim();
+    if (!id) return;
+
+    peer = new Peer(id);
+
+    peer.on('open', (myId) => {
+      setStatus('ОНЛАЙН: ' + myId, 'online');
+      document.getElementById('connectCard').style.display = '';
+      document.getElementById('registerCard').style.opacity = '0.4';
+      document.getElementById('registerCard').style.pointerEvents = 'none';
+      addMsg('Вы онлайн как «' + myId + '»', 'system');
+    });
+
+    peer.on('error', (err) => {
+      addMsg('Ошибка: ' + err.message, 'system');
+    });
+
+    // Incoming data connection
+    peer.on('connection', (c) => {
+      conn = c;
+      setupConn();
+    });
+
+    // Incoming call
+    peer.on('call', (call) => {
+      incomingCall = call;
+      const callerId = call.peer;
+      document.getElementById('callerAvatar').textContent = callerId.charAt(0).toUpperCase();
+      document.getElementById('callerName').textContent = callerId;
+      document.getElementById('incomingCallOverlay').classList.add('active');
+    });
+  }
+
+  // --- Data connection ---
+  function connectToPeer() {
+    const peerId = document.getElementById('peerId').value.trim();
+    if (!peerId || !peer) return;
+    conn = peer.connect(peerId);
+    setupConn();
+  }
+
+  function setupConn() {
+    conn.on('open', () => {
+      setStatus('СВЯЗЬ: ' + conn.peer, 'connected');
+      addMsg('Подключено к «' + conn.peer + '»', 'system');
+    });
+    conn.on('data', (data) => {
+      addMsg(data, 'received');
+    });
+    conn.on('close', () => {
+      addMsg('Соединение закрыто', 'system');
+      setStatus('ОНЛАЙН', 'online');
+    });
+  }
+
+  function sendMsg() {
+    const input = document.getElementById('msgInput');
+    const text = input.value.trim();
+    if (!text || !conn || !conn.open) return;
+    conn.send(text);
+    addMsg(text, 'sent');
+    input.value = '';
+  }
+
+  // --- Calls ---
+  async function startCall(withVideo) {
+    const peerId = document.getElementById('peerId').value.trim();
+    if (!peerId || !peer) return;
+
+    // Also ensure data connection
+    if (!conn || !conn.open) {
+      conn = peer.connect(peerId);
+      setupConn();
+    }
+
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: withVideo
+      });
+    } catch (e) {
+      addMsg('Не удалось получить доступ к камере/микрофону', 'system');
+      return;
+    }
+
+    document.getElementById('localVideo').srcObject = localStream;
+    showCallUI(withVideo);
+
+    currentCall = peer.call(peerId, localStream);
+    currentCall.on('stream', (remoteStream) => {
+      document.getElementById('remoteVideo').srcObject = remoteStream;
+      document.getElementById('remoteAudio').srcObject = remoteStream;
+    });
+    currentCall.on('close', () => endCallUI());
+
+    addMsg(withVideo ? '📹 Видеозвонок...' : '📞 Аудиозвонок...', 'system');
+  }
+
+  async function answerCall() {
+    document.getElementById('incomingCallOverlay').classList.remove('active');
+
+    if (!incomingCall) return;
+
+    // Determine if caller sent video
+    const hasVideo = incomingCall.metadata?.video !== false;
+
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: hasVideo
+      });
+    } catch (e) {
+      localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    }
+
+    document.getElementById('localVideo').srcObject = localStream;
+    showCallUI(true);
+
+    incomingCall.answer(localStream);
+    currentCall = incomingCall;
+
+    currentCall.on('stream', (remoteStream) => {
+      document.getElementById('remoteVideo').srcObject = remoteStream;
+      document.getElementById('remoteAudio').srcObject = remoteStream;
+    });
+    currentCall.on('close', () => endCallUI());
+
+    // Also set up data connection if not already
+    if (!conn || !conn.open) {
+      conn = peer.connect(incomingCall.peer);
+      setupConn();
+    }
+
+    addMsg('Звонок принят', 'system');
+    incomingCall = null;
+  }
+
+  function rejectCall() {
+    document.getElementById('incomingCallOverlay').classList.remove('active');
+    if (incomingCall) {
+      incomingCall.close();
+      incomingCall = null;
+    }
+    addMsg('Звонок отклонён', 'system');
+  }
+
+  function hangup() {
+    if (currentCall) currentCall.close();
+    endCallUI();
+    addMsg('Звонок завершён', 'system');
+  }
+
+  function showCallUI(withVideo) {
+    if (withVideo) {
+      document.getElementById('videoArea').classList.add('active');
+      document.getElementById('btnMuteVid').style.display = 'flex';
+    } else {
+      document.getElementById('videoArea').classList.remove('active');
+      document.getElementById('btnMuteVid').style.display = 'none';
+    }
+    document.getElementById('callControls').classList.add('active');
+    callSeconds = 0;
+    callTimerInterval = setInterval(() => {
+      callSeconds++;
+      const m = String(Math.floor(callSeconds / 60)).padStart(2, '0');
+      const s = String(callSeconds % 60).padStart(2, '0');
+      document.getElementById('callTimer').textContent = m + ':' + s;
+    }, 1000);
+  }
+
+  function endCallUI() {
+    document.getElementById('videoArea').classList.remove('active');
+    document.getElementById('callControls').classList.remove('active');
+    if (callTimerInterval) clearInterval(callTimerInterval);
+    document.getElementById('callTimer').textContent = '00:00';
+    if (localStream) {
+      localStream.getTracks().forEach(t => t.stop());
+      localStream = null;
+    }
+    document.getElementById('localVideo').srcObject = null;
+    document.getElementById('remoteVideo').srcObject = null;
+    micMuted = false;
+    vidMuted = false;
+    document.getElementById('btnMuteMic').classList.remove('muted');
+    document.getElementById('btnMuteVid').classList.remove('muted');
+  }
+
+  function toggleMute(kind) {
+    if (!localStream) return;
+    if (kind === 'audio') {
+      micMuted = !micMuted;
+      localStream.getAudioTracks().forEach(t => t.enabled = !micMuted);
+      document.getElementById('btnMuteMic').classList.toggle('muted', micMuted);
+    } else {
+      vidMuted = !vidMuted;
+      localStream.getVideoTracks().forEach(t => t.enabled = !vidMuted);
+      document.getElementById('btnMuteVid').classList.toggle('muted', vidMuted);
+    }
+  }
+</script>
+
+</body>
+</html>
