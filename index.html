@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>KÖRPÜ — Chat</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     .splash{position:fixed;inset:0;z-index:999;background:#0c1a2e;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s,visibility .6s}.splash.hidden{opacity:0;visibility:hidden;pointer-events:none}.splash img{width:160px;height:160px;object-fit:contain;animation:sp 1.5s ease-in-out infinite;filter:drop-shadow(0 0 30px rgba(0,229,160,.3))}.splash-text{margin-top:16px;font-family:'Space Mono',monospace;font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.3)}@keyframes sp{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
@@ -152,7 +153,7 @@
     <div class="auth-err" id="aErr"></div>
     <div class="divider">или</div>
     <div class="anon-box">
-      <div class="anon-title">🕶 Анонимный чат 🕶</div>
+      <div class="anon-title">🕶 Анонимный чат</div>
       <div class="field"><label style="text-align:center">Ваш никнейм</label><input type="text" id="gN" placeholder="Придумайте имя..." style="text-align:center"></div>
       <button class="abtn abtn-g" onclick="doGuest()">Войти анонимно</button>
     </div>
@@ -360,7 +361,10 @@ function doConn(){const t=document.getElementById('pId').value.trim();if(!t||!ws
 function snd(){const i=document.getElementById('mI');const t=i.value.trim();if(!t||!ws||!activeChat)return;const mid=Date.now().toString(36)+Math.random().toString(36).substr(2,3);ws.send(JSON.stringify({type:'message',target:activeChat,text:t,msgId:mid}));addToChat(activeChat,{type:'s',text:t,time:timeStr(),id:mid});sndS();i.value='';document.getElementById('eP').classList.remove('show')}
 let lT=0;function hk(e){if(e.key==='Enter'){snd();return}if(activeChat&&ws&&Date.now()-lT>1000){ws.send(JSON.stringify({type:'typing',target:activeChat}));lT=Date.now()}}
 
-window.addEventListener('load',()=>{setTimeout(()=>document.getElementById('splash').classList.add('hidden'),1800);initE();initAvatarPick();const s=localStorage.getItem('kc');if(s){const c=JSON.parse(s);document.getElementById('savedInfo').style.display='';document.getElementById('savedU').textContent=c.l}document.addEventListener('click',e=>{if(!e.target.closest('.ep')&&!e.target.closest('.ib'))document.getElementById('eP').classList.remove('show')})});
+window.addEventListener('load',()=>{
+  // Telegram fullscreen
+  if(window.Telegram&&Telegram.WebApp){Telegram.WebApp.expand();try{Telegram.WebApp.requestFullscreen()}catch(e){}}
+  setTimeout(()=>document.getElementById('splash').classList.add('hidden'),1800);initE();initAvatarPick();const s=localStorage.getItem('kc');if(s){const c=JSON.parse(s);document.getElementById('savedInfo').style.display='';document.getElementById('savedU').textContent=c.l}document.addEventListener('click',e=>{if(!e.target.closest('.ep')&&!e.target.closest('.ib'))document.getElementById('eP').classList.remove('show')})});
 </script>
 </body>
 </html>
