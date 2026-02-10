@@ -793,10 +793,6 @@
     addMsg('Подключение к серверу...', 'system');
 
     peer = new Peer(id, {
-      host: 'korpu-server.onrender.com',
-      port: 443,
-      path: '/myapp',
-      secure: true,
       config: {
         iceServers: [
           { urls: 'stun:stun.relay.metered.ca:80' },
