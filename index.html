@@ -797,6 +797,7 @@
       port: 443,
       path: '/myapp',
       secure: true,
+      serialization: 'json',
       config: {
         iceServers: [
           { urls: 'stun:stun.l.google.com:19302' },
@@ -805,7 +806,7 @@
           { urls: 'stun:stun.stunprotocol.org' }
         ]
       },
-      debug: 1
+      debug: 2
     });
 
     peer.on('open', (myId) => {
@@ -856,7 +857,8 @@
   function connectToPeer() {
     const peerId = document.getElementById('peerId').value.trim();
     if (!peerId || !peer) return;
-    conn = peer.connect(peerId);
+    addMsg('Подключение к «' + peerId + '»...', 'system');
+    conn = peer.connect(peerId, { reliable: true });
     setupConn();
   }
 
@@ -871,6 +873,9 @@
     conn.on('close', () => {
       addMsg('Соединение закрыто', 'system');
       setStatus('ОНЛАЙН', 'online');
+    });
+    conn.on('error', (err) => {
+      addMsg('Ошибка соединения: ' + err.message, 'system');
     });
   }
 
