@@ -790,7 +790,19 @@
     const id = document.getElementById('myId').value.trim();
     if (!id) return;
 
-    peer = new Peer(id);
+    addMsg('Подключение к серверу...', 'system');
+
+    peer = new Peer(id, {
+      config: {
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' },
+          { urls: 'stun:stun2.l.google.com:19302' },
+          { urls: 'stun:stun.stunprotocol.org' }
+        ]
+      },
+      debug: 1
+    });
 
     peer.on('open', (myId) => {
       setStatus('ОНЛАЙН: ' + myId, 'online');
@@ -801,7 +813,23 @@
     });
 
     peer.on('error', (err) => {
-      addMsg('Ошибка: ' + err.message, 'system');
+      addMsg('Ошибка: ' + err.type + ' — ' + err.message, 'system');
+      if (err.type === 'unavailable-id') {
+        addMsg('Этот ID уже занят. Попробуйте другой.', 'system');
+      }
+      if (err.type === 'network' || err.type === 'server-error') {
+        addMsg('Сервер недоступен. Повтор через 3 сек...', 'system');
+        setTimeout(() => register(), 3000);
+      }
+      if (err.type === 'peer-unavailable') {
+        addMsg('Собеседник не найден. Убедитесь что он онлайн.', 'system');
+      }
+    });
+
+    peer.on('disconnected', () => {
+      addMsg('Отключено от сервера. Переподключение...', 'system');
+      setStatus('ПЕРЕПОДКЛЮЧЕНИЕ...', '');
+      peer.reconnect();
     });
 
     // Incoming data connection
