@@ -797,7 +797,6 @@
       port: 443,
       path: '/myapp',
       secure: true,
-      serialization: 'json',
       config: {
         iceServers: [
           { urls: 'stun:stun.relay.metered.ca:80' },
@@ -875,12 +874,27 @@
     const peerId = document.getElementById('peerId').value.trim();
     if (!peerId || !peer) return;
     addMsg('Подключение к «' + peerId + '»...', 'system');
-    conn = peer.connect(peerId, { reliable: true });
-    setupConn();
+    
+    try {
+      conn = peer.connect(peerId, { reliable: true });
+      addMsg('Соединение создано, ожидание открытия...', 'system');
+      
+      // Timeout - если не подключилось за 15 секунд
+      const timeout = setTimeout(() => {
+        if (!conn || !conn.open) {
+          addMsg('Таймаут подключения. Попробуйте: 1) Оба закройте страницу 2) Оба заново войдите 3) Подключитесь снова', 'system');
+        }
+      }, 15000);
+      
+      setupConn(timeout);
+    } catch(e) {
+      addMsg('Ошибка создания соединения: ' + e.message, 'system');
+    }
   }
 
-  function setupConn() {
+  function setupConn(timeout) {
     conn.on('open', () => {
+      if (timeout) clearTimeout(timeout);
       setStatus('СВЯЗЬ: ' + conn.peer, 'connected');
       addMsg('Подключено к «' + conn.peer + '»', 'system');
     });
@@ -892,7 +906,7 @@
       setStatus('ОНЛАЙН', 'online');
     });
     conn.on('error', (err) => {
-      addMsg('Ошибка соединения: ' + err.message, 'system');
+      addMsg('Ошибка соединения: ' + err.type + ' — ' + err.message, 'system');
     });
   }
 
