@@ -622,12 +622,18 @@ function handle(m){switch(m.type){
   case'friend_added':
     alert('✅ ' + m.friendName + ' добавлен в друзья');
     myFriends.add(m.friendId);
-    if(!isG&&ws)ws.send(JSON.stringify({type:'get_online'})); // Обновить список
+    if(!isG&&ws) {
+      ws.send(JSON.stringify({type:'get_online'}));
+      ws.send(JSON.stringify({type:'get_friends'})); // ← КЛЮЧЕВАЯ СТРОКА
+    }
     break;
   case'friend_removed':
     alert('❌ ' + m.friendName + ' удалён из друзей');
     myFriends.delete(m.friendId);
-    if(!isG&&ws)ws.send(JSON.stringify({type:'get_online'})); // Обновить список
+    if(!isG&&ws) {
+      ws.send(JSON.stringify({type:'get_online'}));
+      ws.send(JSON.stringify({type:'get_friends'})); // ← КЛЮЧЕВАЯ СТРОКА
+    }
     break;
   case'friends_list':
     myFriends = new Set(m.friends.map(f => f.id));
