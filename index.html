@@ -72,7 +72,17 @@
       transition:background .3s,color .3s;
       position:relative;
     }
-    body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 20% 50%,rgba(0,229,160,.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(100,60,255,.05) 0%,transparent 50%);animation:bga 20s ease-in-out infinite alternate;z-index:0}@keyframes bga{0%{transform:translate(0,0)}100%{transform:translate(-5%,3%)}}
+    /* === FIXED: removed transform from animation === */
+    body::before{
+      content:'';position:fixed;top:0;left:0;right:0;bottom:0;
+      background:radial-gradient(ellipse at 20% 50%,rgba(0,229,160,.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(100,60,255,.05) 0%,transparent 50%);
+      animation:bga 20s ease-in-out infinite alternate;
+      z-index:0;
+    }
+    @keyframes bga{
+      0%{background-position:0% 0%, 100% 100%}
+      100%{background-position:100% 100%, 0% 0%}
+    }
     body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:60px 60px;z-index:0}
     .app{
       position:relative;
@@ -176,23 +186,20 @@
     .rp{display:none;position:fixed;background:var(--bg);border:1px solid var(--gb);border-radius:18px;padding:3px 5px;z-index:60}.rp.show{display:flex;gap:1px;animation:fu .15s ease}.rp span{font-size:.9rem;cursor:pointer;padding:2px 3px;border-radius:7px}.rp span:hover{background:rgba(255,255,255,.1)}
     svg{display:block}
 
-    /* --- Update Panel --- */
+    /* --- Update Panel (FIXED) --- */
     .update-panel {
       position: fixed;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) scale(0.95);
       opacity: 0;
       visibility: hidden;
-      z-index: 9999; /* Увеличен z-index */
-      transition: all 0.3s cubic-bezier(0.17, 0.67, 0.88, 1.01);
+      z-index: 9999;
+      transition: opacity 0.3s, visibility 0.3s;
     }
     .update-panel.show {
       opacity: 1;
       visibility: visible;
-      transform: translate(-50%, -50%) scale(1);
     }
-
     .update-card {
       background: var(--cb);
       border: 1px solid var(--gb);
@@ -201,6 +208,7 @@
       width: 280px;
       box-shadow: 0 8px 30px rgba(0, 229, 160, 0.15);
       backdrop-filter: blur(16px);
+      transform: translate(-50%, -50%); /* ← transform moved here */
     }
 
     .update-header {
@@ -253,6 +261,7 @@
   <img src="logo.png" alt="KÖRPÜ" class="splash-logo">
   <div class="splash-text">Загрузка...</div>
 </div>
+
 <div class="app">
 
 <!-- AUTH -->
@@ -302,20 +311,6 @@
       <div class="ib" onclick="document.getElementById('stP').classList.toggle('show')">💬</div>
       <div class="ib" onclick="doLogout()">🚪</div>
       <div class="badge" id="stB">ОФЛАЙН</div>
-    </div>
-  </div>
-
-  <!-- Информационная панель обновления -->
-  <div class="update-panel" id="updatePanel">
-    <div class="update-card">
-      <div class="update-header">
-        <span>UPDATE 1.1</span>
-        <button class="close-btn" onclick="hideUpdatePanel()">✕</button>
-      </div>
-      <div class="update-body">
-        <p>✨ Добавлен Анонимный чат</p>
-        <p>Теперь вы можете начать общение без регистрации — просто нажмите «Анонимный чат» внизу.</p>
-      </div>
     </div>
   </div>
 
@@ -371,6 +366,22 @@
   </div>
 </div>
 </div>
+
+<!-- === ПАНЕЛЬ ОБНОВЛЕНИЯ ВНЕ .app === -->
+<div class="update-panel" id="updatePanel">
+  <div class="update-card">
+    <div class="update-header">
+      <span>UPDATE 1.1</span>
+      <button class="close-btn" onclick="hideUpdatePanel()">✕</button>
+    </div>
+    <div class="update-body">
+      <p>✨ Добавлен Анонимный чат</p>
+      <p>Теперь вы можете начать общение без регистрации — просто нажмите «Анонимный чат» внизу.</p>
+    </div>
+  </div>
+</div>
+<!-- ================================= -->
+
 <div class="rp" id="rPk"><span onclick="doReact('👍')">👍</span><span onclick="doReact('❤️')">❤️</span><span onclick="doReact('😂')">😂</span><span onclick="doReact('😮')">😮</span><span onclick="doReact('😢')">😢</span><span onclick="doReact('🔥')">🔥</span></div>
 
 <script>
