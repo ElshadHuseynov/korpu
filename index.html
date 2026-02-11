@@ -320,7 +320,7 @@
     <span class="myid-name" id="myNameDisp"></span>
     <span class="myid-login" id="myLoginDisp"></span>
     <span class="myid-status" id="myStatusDisp"></span>
-    <button class="copy-btn" id="copyBtn" onclick="copyMyId()">📋 Копировать ID</button>
+    <button class="copy-btn" id="copyBtn" onclick="copyMyId()">📋</button>
   </div>
 
   <!-- Status picker -->
@@ -332,6 +332,7 @@
     <span class="st-opt" onclick="setSt('Он тут')">👀 Он тут</span>
     <span class="st-opt" onclick="setSt('Занят')">🔴 Занят</span>
     <span class="st-opt" onclick="setSt('Играю')">🎮 Играю</span>
+    <span class="st-opt" onclick="setSt('Невидимка')">👻 Невидимка</span> <!-- НОВЫЙ СТАТУС -->
   </div>
 
   <!-- Online panel -->
@@ -412,7 +413,7 @@ const AVATARS = [
   '🐱', '🐶', '🦊', '🐼', '🐨', '🦁', '🐯', '🐸', '🐵', '🦄',
   '🐺', '🐰', '🐻', '🦋', '🐙', '🐧', '🦝', '🦉', '🦔', '🦫'
 ];
-const STATUSES=['Онлайн','Отдыхаю','Ку-Ку','Он тут','Занят','Играю'];
+const STATUSES=['Онлайн','Отдыхаю','Ку-Ку','Он тут','Занят','Играю','Невидимка'];
 
 let ws,myId,myName,myAvatar='🐱',myStatus='Онлайн',isG=false,isDark=true;
 let activeChat=null; // current peer id
@@ -506,6 +507,27 @@ function doReact(em){if(!rTgt||!ws||!activeChat)return;ws.send(JSON.stringify({t
 async function srec(){if(!activeChat)return;try{const s=await navigator.mediaDevices.getUserMedia({audio:true});mRec=new MediaRecorder(s);aCh=[];isRec=true;document.getElementById('mic').classList.add('rec');mRec.ondataavailable=e=>aCh.push(e.data);mRec.onstop=()=>{s.getTracks().forEach(t=>t.stop());const b=new Blob(aCh,{type:'audio/webm'});const r=new FileReader();r.onloadend=()=>{const mid=Date.now().toString(36);addToChat(activeChat,{type:'s',html:'🎤 Голосовое',text:'🎤',time:timeStr(),id:mid});sndS();if(ws)ws.send(JSON.stringify({type:'voice',target:activeChat,audio:r.result,duration:3,msgId:mid}))};r.readAsDataURL(b)};mRec.start()}catch(e){}}
 function erec(){if(mRec&&isRec){mRec.stop();isRec=false;document.getElementById('mic').classList.remove('rec')}}
 
+// Friends
+let myFriends = new Set(); // Хранит login/id друзей
+
+function addFriend(login) {
+  if (!ws || !myId || isG) {
+    alert('Только для зарегистрированных пользователей');
+    return;
+  }
+  ws.send(JSON.stringify({ type: 'add_friend', friendId: login }));
+}
+
+function removeFriend(login) {
+  if (!ws || !myId || isG) return;
+  ws.send(JSON.stringify({ type: 'remove_friend', friendId: login }));
+}
+
+function requestFriendsList() {
+  if (!ws || !myId || isG) return;
+  ws.send(JSON.stringify({ type: 'get_friends' }));
+}
+
 // WS
 function handle(m){switch(m.type){
   case'auth_success':myId=m.id;myName=m.displayName;isG=m.isGuest;myAvatar=m.avatar||'👤';myStatus=m.status||'';showChat();
@@ -538,6 +560,20 @@ function handle(m){switch(m.type){
   case'online_list':if(!isG)rOL(m.users);break;
   case'user_online':case'user_updated':if(!isG&&ws)ws.send(JSON.stringify({type:'get_online'}));break;
   case'error':if(activeChat)addToChat(activeChat,{type:'y',text:m.text});break;
+
+  // === NEW: FRIENDS HANDLING ===
+  case'friend_added':
+    alert('✅ ' + m.friendName + ' добавлен в друзья');
+    myFriends.add(m.friendId);
+    break;
+  case'friend_removed':
+    alert('❌ ' + m.friendName + ' удалён из друзей');
+    myFriends.delete(m.friendId);
+    break;
+  case'friends_list':
+    myFriends = new Set(m.friends.map(f => f.id));
+    console.log('Friends list loaded:', Array.from(myFriends));
+    break;
 }}
 
 function doConn(){const t=document.getElementById('pId').value.trim();if(!t||!ws)return;ws.send(JSON.stringify({type:'connect',target:t}));document.getElementById('pId').value=''}
