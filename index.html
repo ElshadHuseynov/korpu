@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>KÖRPÜ — Chat</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -11,10 +14,11 @@
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     :root{--bg:#0a0a0f;--glass:rgba(255,255,255,.06);--gb:rgba(255,255,255,.08);--a:#00e5a0;--ag:rgba(0,229,160,.3);--ad:rgba(0,229,160,.1);--danger:#ff4d6a;--t:#e8e8ec;--td:rgba(255,255,255,.4);--tm:rgba(255,255,255,.65);--sb:linear-gradient(135deg,rgba(0,229,160,.2),rgba(0,229,160,.08));--sbb:rgba(0,229,160,.15);--rb:rgba(255,255,255,.06);--rbb:rgba(255,255,255,.06);--cb:rgba(255,255,255,.06)}
     html.light{--bg:#f0f2f5;--glass:rgba(0,0,0,.04);--gb:rgba(0,0,0,.08);--a:#00b386;--ag:rgba(0,179,134,.2);--ad:rgba(0,179,134,.08);--t:#1a1a2e;--td:rgba(0,0,0,.4);--tm:rgba(0,0,0,.55);--sb:linear-gradient(135deg,rgba(0,179,134,.15),rgba(0,179,134,.06));--sbb:rgba(0,179,134,.2);--rb:rgba(0,0,0,.04);--rbb:rgba(0,0,0,.06);--cb:rgba(255,255,255,.7)}
-    html{font-size:16px}body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;overflow:hidden;transition:background .3s,color .3s}
+    html{font-size:16px}
+    body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;overflow:hidden;transition:background .3s,color .3s;position:relative;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
     body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 20% 50%,rgba(0,229,160,.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(100,60,255,.05) 0%,transparent 50%);animation:bga 20s ease-in-out infinite alternate;z-index:0}@keyframes bga{0%{transform:translate(0,0)}100%{transform:translate(-5%,3%)}}
     body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:60px 60px;z-index:0}
-    .app{position:relative;z-index:1;display:flex;flex-direction:column;height:100vh;max-width:520px;margin:0 auto;padding:10px}
+    .app{position:relative;z-index:1;display:flex;flex-direction:column;height:100vh;max-width:520px;margin:0 auto;padding:10px;padding-top:calc(10px + env(safe-area-inset-top,0px));padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
     @keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
     /* AUTH */
@@ -51,7 +55,7 @@
 
     /* CHAT */
     .chat{display:none;flex-direction:column;flex:1;min-height:0}.chat.on{display:flex}
-    .hdr{display:flex;align-items:center;justify-content:space-between;padding:5px 0;margin-bottom:4px}
+    .hdr{display:flex;align-items:center;justify-content:space-between;padding:5px 0;margin-bottom:4px;padding-top:calc(env(safe-area-inset-top,0px)/2);padding-bottom:calc(env(safe-area-inset-top,0px)/2);}
     .logo{font-family:'Space Mono',monospace;font-size:.9rem;font-weight:700;letter-spacing:2px;color:var(--a);text-shadow:0 0 15px var(--ag)}
     .hdr-r{display:flex;align-items:center;gap:3px}
     .badge{font-size:.55rem;padding:3px 7px;border-radius:100px;background:rgba(255,255,255,.05);border:1px solid var(--gb);color:var(--td);font-family:'Space Mono',monospace;letter-spacing:.5px;transition:all .5s;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -113,7 +117,7 @@
     .m:hover .rb{opacity:1}.rb{position:absolute;top:-7px;right:-7px;opacity:0;background:var(--bg);border:1px solid var(--gb);border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.55rem;transition:opacity .2s}
 
     #ti{font-size:.58rem;color:var(--a);font-family:'Space Mono',monospace;height:12px;opacity:0;transition:opacity .3s}#ti.v{opacity:1}
-    .ibar{display:flex;gap:4px;margin-top:4px;align-items:center}
+    .ibar{display:flex;gap:4px;margin-top:4px;align-items:center;padding-bottom:calc(env(safe-area-inset-bottom,0px)/2);padding-top:4px;}
     .bs{width:34px;height:34px;padding:0;border-radius:50%;background:var(--a);color:#0a0a0f;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s;box-shadow:0 2px 8px var(--ag)}.bs:hover{transform:scale(1.05)}
     .bm{width:34px;height:34px;padding:0;border-radius:50%;background:var(--glass);border:1px solid var(--gb);color:var(--tm);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s}.bm.rec{background:var(--danger);color:white;border-color:var(--danger);animation:pu 1s infinite}@keyframes pu{0%,100%{box-shadow:0 0 0 0 rgba(255,77,106,.4)}50%{box-shadow:0 0 0 7px rgba(255,77,106,0)}}
     .ep{display:none;position:absolute;bottom:48px;left:4px;right:4px;background:var(--bg);border:1px solid var(--gb);border-radius:11px;padding:6px;z-index:50;max-height:150px;overflow-y:auto;animation:fu .2s ease}.ep.show{display:block}
@@ -123,12 +127,12 @@
   </style>
 </head>
 <body>
-<div class="splash" id="splash"><img src="logo.png" alt="KÖRPÜ"><div class="splash-text">Загрузка...</div></div>
+<div class="splash" id="splash"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMGU1YTAiIHN0cm9rZS13aWR0aD0iMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIvPjxjaXJjbGUgY3g9IjkuNSIgY3k9IjguNSIgcj0iMSIvPjxjaXJjbGUgY3g9IjE0LjUiIGN5PSI4LjUiIHI9IjEiLz48cGF0aCBkPSJNOSAxMWMwIDEuNjU0IDIuOTY3IDMgNyAzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=" alt="KÖRPÜ"><div class="splash-text">Загрузка...</div></div>
 <div class="app">
 
 <!-- AUTH -->
 <div class="auth" id="authScr">
-  <img src="logo.png" class="auth-logo" alt="">
+  <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDBlNWEwIiBzdHJva2Utd2lkdGg9IjIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiLz48Y2lyY2xlIGN4PSI5LjUiIGN5PSI4LjUiIHI9IjEiLz48Y2lyY2xlIGN4PSIxNC41IiBjeT0iOC41IiByPSIxIi8+PHBhdGggZD0iOSAxMWMwIDEuNjU0IDIuOTY3IDMgNyAzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=" class="auth-logo" alt="">
   <div class="auth-title">KÖRPÜ</div>
   <div class="auth-sub">Безопасный мессенджер</div>
   <div class="auth-card">
@@ -231,7 +235,7 @@
 <script>
 const WS='wss://korpu-server.onrender.com';
 const EM=['😀','😂','🤣','😊','😍','🥰','😘','😎','🤩','🥳','😏','😢','😭','😤','🤯','🤔','🤫','🤗','😴','👍','👎','👋','🙏','💪','❤️','🔥','⭐','🎉','💯','✅','❌','💀','👀','🚀','☕','🍕','🎵','🫡','🫶','🤮'];
-const AVATARS=['🐱','🐶','🦊','🐼','🐨','🦁','🐯','🐸','🐵','🦄','🐺','🐰','🐻','🦋','🐙','🐧'];
+const AVATARS=['🐱','🐶','🦊','🐼','🐨','狮子','🐯','🐸','🐵','🦄','🐺','🐰','🐻','🦋','🐙','🐧'];
 const STATUSES=['Онлайн','Отдыхаю','Ку-Ку','Он тут','Занят','Играю'];
 
 let ws,myId,myName,myAvatar='🐱',myStatus='Онлайн',isG=false,isDark=true;
@@ -335,16 +339,19 @@ function handle(m){switch(m.type){
   case'kicked':doLogout();break;
   case'connected':
     ensureChat(m.peer,m.displayName,m.avatar);switchChat(m.peer);
-    addToChat(m.peer,{type:'y',text:'Подключено к «'+m.displayName+'»'});sndC();
+    addToChat(m.peer,{type:'y',text:'Подключено к «'+m.displayName+'»'});
+    sndC();
     document.getElementById('stB').textContent='СВЯЗЬ';document.getElementById('stB').className='badge link';break;
   case'message':
     ensureChat(m.from,m.displayName,m.avatar);
     const mid=m.msgId||Date.now().toString(36);
-    addToChat(m.from,{type:'r',text:m.text,from:m.displayName||m.from,time:timeStr(),id:mid});sndR();
+    addToChat(m.from,{type:'r',text:m.text,from:m.displayName||m.from,time:timeStr(),id:mid});
+    sndR();
     if(ws)ws.send(JSON.stringify({type:'read',target:m.from,msgId:mid}));break;
   case'voice':
     ensureChat(m.from,m.displayName,m.avatar);
-    addToChat(m.from,{type:'r',html:'🎤 Голосовое',text:'🎤',from:m.displayName||m.from,time:timeStr(),id:m.msgId});sndR();break;
+    addToChat(m.from,{type:'r',html:'🎤 Голосовое',text:'🎤',from:m.displayName||m.from,time:timeStr(),id:m.msgId});
+    sndR();break;
   case'typing':{const el=document.getElementById('ti');el.textContent=m.from+' печатает...';el.classList.add('v');clearTimeout(tto);tto=setTimeout(()=>el.classList.remove('v'),2000)}break;
   case'delivered':{const s=document.getElementById('st-'+m.msgId);if(s)s.textContent='✓'}break;
   case'read':{const s=document.getElementById('st-'+m.msgId);if(s){s.textContent='✓✓';s.style.color='var(--a)'}}break;
@@ -363,8 +370,21 @@ let lT=0;function hk(e){if(e.key==='Enter'){snd();return}if(activeChat&&ws&&Date
 
 window.addEventListener('load',()=>{
   // Telegram fullscreen
-  if(window.Telegram&&Telegram.WebApp){Telegram.WebApp.expand();try{Telegram.WebApp.requestFullscreen()}catch(e){}}
-  setTimeout(()=>document.getElementById('splash').classList.add('hidden'),1800);initE();initAvatarPick();const s=localStorage.getItem('kc');if(s){const c=JSON.parse(s);document.getElementById('savedInfo').style.display='';document.getElementById('savedU').textContent=c.l}document.addEventListener('click',e=>{if(!e.target.closest('.ep')&&!e.target.closest('.ib'))document.getElementById('eP').classList.remove('show')})});
+  if(window.Telegram&&Telegram.WebApp){
+    Telegram.WebApp.expand();
+    try{
+      Telegram.WebApp.requestFullscreen()
+    }catch(e){}
+    // Установить отступы для безопасной зоны
+    document.documentElement.style.setProperty('--tg-safe-area-top', Telegram.WebApp.env?.safeAreaInsets?.top + 'px' || '0px');
+    document.documentElement.style.setProperty('--tg-safe-area-bottom', Telegram.WebApp.env?.safeAreaInsets?.bottom + 'px' || '0px');
+  }
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('hidden');
+    document.getElementById('splash').remove();
+  }, 1800);
+  initE();initAvatarPick();const s=localStorage.getItem('kc');if(s){const c=JSON.parse(s);document.getElementById('savedInfo').style.display='';document.getElementById('savedU').textContent=c.l}document.addEventListener('click',e=>{if(!e.target.closest('.ep')&&!e.target.closest('.ib'))document.getElementById('eP').classList.remove('show')})});
 </script>
 </body>
 </html>
+
