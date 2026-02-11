@@ -184,7 +184,7 @@
       transform: translate(-50%, -50%) scale(0.95);
       opacity: 0;
       visibility: hidden;
-      z-index: 200;
+      z-index: 9999; /* Увеличен z-index */
       transition: all 0.3s cubic-bezier(0.17, 0.67, 0.88, 1.01);
     }
     .update-panel.show {
@@ -294,7 +294,8 @@
 <!-- CHAT -->
 <div class="chat" id="chatScr">
   <div class="hdr">
-    <div class="logo" onclick="showUpdatePanel()">KÖRPÜ</div>
+    <!-- ✅ LOGO DIV TAG (БЕЗ onclick) -->
+    <div class="logo">KÖRPÜ</div>
     <div class="hdr-r">
       <div class="ib" onclick="isDark=!isDark;document.documentElement.classList.toggle('light',!isDark)">🌙</div>
       <div class="ib" id="oBtn" onclick="toggleOL()" style="display:none">👥</div>
@@ -394,7 +395,7 @@ function hideUpdatePanel() {
 
 // === ORIGINAL SCRIPT LOGIC ===
 const WS='wss://korpu-server.onrender.com';
-const EM=['😀','😂','🤣','😊','😍','🥰','😘','😎','🤩','🥳','😏','😢','😭','😤','🤯','🤔','🤫','🤗','😴','👍','👎','👋','🙏','💪','❤️','🔥','⭐','🎉','💯','✅','❌','💀','👀','🚀','☕','🍕','🎵','🫡','🫶','🤮'];
+const EM=['😀','😂','🤣','😊','😍','🥰','😘','😎','🤩','🥳','😏','😢','😭','😤','🤯','🤔','短视频','🤗','😴','👍','👎','👋','🙏','💪','❤️','🔥','⭐','🎉','💯','✅','❌','💀','👀','🚀','☕','🍕','🎵','🫡','🫶','🤮'];
 // ✅ FIXED: Only emoji in AVATARS array
 const AVATARS = [
   '🐱', '🐶', '🦊', '🐼', '🐨', '🦁', '🐯', '🐸', '🐵', '🦄',
@@ -554,13 +555,23 @@ window.addEventListener('load',()=>{
     document.getElementById('splash').classList.add('hidden');
     document.getElementById('splash').remove();
   }, 1800);
+
+  // ===== ПРИВЯЗКА ОБРАБОТЧИКА К ЛОГОТИПУ (FIXED) =====
+  const logoElement = document.querySelector('.logo');
+  if (logoElement) {
+    logoElement.addEventListener('click', showUpdatePanel);
+  }
+  // ================================================
+
   initE();initAvatarPick();const s=localStorage.getItem('kc');if(s){const c=JSON.parse(s);document.getElementById('savedInfo').style.display='';document.getElementById('savedU').textContent=c.l}
+
   // Обработчик клика вне панели
   document.addEventListener('click',e=>{
     if(!e.target.closest('.ep') && !e.target.closest('.ib') && !e.target.closest('.update-panel')){
       hideUpdatePanel();
     }
   });
+
 });
 </script>
 </body>
