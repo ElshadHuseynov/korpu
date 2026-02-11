@@ -56,7 +56,6 @@
       overflow:hidden;
       transition:background .3s,color .3s;
       position:relative;
-      /* Убрали padding из body, он теперь в .app */
     }
     body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 20% 50%,rgba(0,229,160,.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(100,60,255,.05) 0%,transparent 50%);animation:bga 20s ease-in-out infinite alternate;z-index:0}@keyframes bga{0%{transform:translate(0,0)}100%{transform:translate(-5%,3%)}}
     body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:60px 60px;z-index:0}
@@ -69,13 +68,12 @@
       max-width:520px;
       margin:0 auto;
       padding:10px;
-      /* Основной фикс: используем переменные из JS */
       padding-top: calc(var(--tg-safe-area-top) + 10px);
       padding-bottom: calc(var(--tg-safe-area-bottom) + 10px);
     }
     @keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-    /* --- Остальной CSS остаётся без изменений --- */
+    /* --- Остальной CSS --- */
     .auth{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;animation:fu .5s ease}
     .auth-logo{width:80px;height:80px;object-fit:contain;margin-bottom:8px;filter:drop-shadow(0 0 20px var(--ag))}
     .auth-title{font-family:'Space Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--a);letter-spacing:3px;margin-bottom:2px}
@@ -106,7 +104,8 @@
     .av-opt:hover{border-color:rgba(255,255,255,.2)}
     .chat{display:none;flex-direction:column;flex:1;min-height:0}.chat.on{display:flex}
     .hdr{display:flex;align-items:center;justify-content:space-between;padding:5px 0;margin-bottom:4px;}
-    .logo{font-family:'Space Mono',monospace;font-size:.9rem;font-weight:700;letter-spacing:2px;color:var(--a);text-shadow:0 0 15px var(--ag)}
+    .logo{font-family:'Space Mono',monospace;font-size:.9rem;font-weight:700;letter-spacing:2px;color:var(--a);text-shadow:0 0 15px var(--ag); cursor: pointer; transition: opacity 0.2s;} /* Добавлен стиль */
+    .logo:hover { opacity: 0.85; } /* Добавлен эффект */
     .hdr-r{display:flex;align-items:center;gap:3px}
     .badge{font-size:.55rem;padding:3px 7px;border-radius:100px;background:rgba(255,255,255,.05);border:1px solid var(--gb);color:var(--td);font-family:'Space Mono',monospace;letter-spacing:.5px;transition:all .5s;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .badge.on{background:var(--ad);border-color:rgba(0,229,160,.3);color:var(--a)}
@@ -115,7 +114,7 @@
     .ib:hover{background:rgba(255,255,255,.1)}.ib.act{background:var(--ad);border-color:rgba(0,229,160,.3);color:var(--a)}
     .myid-bar{display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--glass);border:1px solid var(--gb);border-radius:10px;margin-bottom:5px;font-size:.72rem;animation:fu .3s ease}
     .myid-bar .av-icon{font-size:1.1rem}
-    .myid-name{font-weight:600;color:var(--t)}
+    .myid-name{font-weight:500;color:var(--t)}
     .myid-login{color:var(--td);font-family:'Space Mono',monospace;font-size:.62rem}
     .myid-status{font-size:.6rem;color:var(--a);margin-left:4px}
     .copy-btn{margin-left:auto;padding:3px 8px;border-radius:6px;border:1px solid var(--gb);background:var(--glass);color:var(--tm);font-size:.6rem;cursor:pointer;font-family:'Space Mono',monospace;transition:all .2s}
@@ -155,13 +154,83 @@
     .mr{position:absolute;bottom:-7px;right:7px;background:var(--bg);border:1px solid var(--gb);border-radius:9px;padding:1px 4px;font-size:.63rem}
     .m:hover .rb{opacity:1}.rb{position:absolute;top:-7px;right:-7px;opacity:0;background:var(--bg);border:1px solid var(--gb);border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.55rem;transition:opacity .2s}
     #ti{font-size:.58rem;color:var(--a);font-family:'Space Mono',monospace;height:12px;opacity:0;transition:opacity .3s}#ti.v{opacity:1}
-    .ibar{display:flex;gap:4px;margin-top:4px;align-items:center;padding-bottom:calc(var(--tg-safe-area-bottom) / 2);padding-top:calc(var(--tg-safe-area-bottom) / 2);} /* Добавлен отступ снизу */
+    .ibar{display:flex;gap:4px;margin-top:4px;align-items:center;padding-bottom:calc(var(--tg-safe-area-bottom) / 2);padding-top:calc(var(--tg-safe-area-bottom) / 2);}
     .bs{width:34px;height:34px;padding:0;border-radius:50%;background:var(--a);color:#0a0a0f;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s;box-shadow:0 2px 8px var(--ag)}.bs:hover{transform:scale(1.05)}
     .bm{width:34px;height:34px;padding:0;border-radius:50%;background:var(--glass);border:1px solid var(--gb);color:var(--tm);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .2s}.bm.rec{background:var(--danger);color:white;border-color:var(--danger);animation:pu 1s infinite}@keyframes pu{0%,100%{box-shadow:0 0 0 0 rgba(255,77,106,.4)}50%{box-shadow:0 0 0 7px rgba(255,77,106,0)}}
     .ep{display:none;position:absolute;bottom:48px;left:4px;right:4px;background:var(--bg);border:1px solid var(--gb);border-radius:11px;padding:6px;z-index:50;max-height:150px;overflow-y:auto;animation:fu .2s ease}.ep.show{display:block}
     .eg{display:grid;grid-template-columns:repeat(8,1fr);gap:2px}.ei{font-size:1.15rem;text-align:center;padding:3px;border-radius:7px;cursor:pointer}.ei:hover{background:rgba(255,255,255,.1)}
     .rp{display:none;position:fixed;background:var(--bg);border:1px solid var(--gb);border-radius:18px;padding:3px 5px;z-index:60}.rp.show{display:flex;gap:1px;animation:fu .15s ease}.rp span{font-size:.9rem;cursor:pointer;padding:2px 3px;border-radius:7px}.rp span:hover{background:rgba(255,255,255,.1)}
-    svg{display:block}@media(max-width:540px){.app{padding:6px}}
+    svg{display:block}
+
+    /* --- Update Panel --- */
+    .update-panel {
+      position: absolute;
+      top: calc(var(--tg-safe-area-top) + 60px); /* отступ от верха + высота hdr */
+      left: 50%;
+      transform: translateX(-50%) scale(0.95);
+      opacity: 0;
+      visibility: hidden;
+      z-index: 100;
+      transition: all 0.3s cubic-bezier(0.17, 0.67, 0.88, 1.01);
+    }
+    .update-panel.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) scale(1);
+    }
+
+    .update-card {
+      background: var(--cb);
+      border: 1px solid var(--gb);
+      border-radius: 14px;
+      padding: 16px;
+      width: 280px;
+      box-shadow: 0 8px 30px rgba(0, 229, 160, 0.15);
+      backdrop-filter: blur(16px);
+    }
+
+    .update-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 0.7rem;
+      color: var(--a);
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--td);
+      font-size: 0.9rem;
+      cursor: pointer;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.2s;
+    }
+    .close-btn:hover {
+      background: rgba(255,255,255,.08);
+      color: var(--t);
+    }
+
+    .update-body p {
+      font-size: 0.72rem;
+      color: var(--tm);
+      line-height: 1.5;
+      margin: 6px 0;
+    }
+    .update-body p:first-child {
+      font-weight: 600;
+      color: var(--t);
+    }
+
+    @media(max-width:540px){.app{padding:6px}}
   </style>
 </head>
 <body>
@@ -206,13 +275,27 @@
 <!-- CHAT -->
 <div class="chat" id="chatScr">
   <div class="hdr">
-    <div class="logo">KÖRPÜ</div>
+    <div class="logo" onclick="showUpdatePanel()">KÖRPÜ</div> <!-- Изменён на div с onclick -->
     <div class="hdr-r">
       <div class="ib" onclick="isDark=!isDark;document.documentElement.classList.toggle('light',!isDark)">🌙</div>
       <div class="ib" id="oBtn" onclick="toggleOL()" style="display:none">👥</div>
       <div class="ib" onclick="document.getElementById('stP').classList.toggle('show')">💬</div>
       <div class="ib" onclick="doLogout()">🚪</div>
       <div class="badge" id="stB">ОФЛАЙН</div>
+    </div>
+  </div>
+
+  <!-- Информационная панель обновления -->
+  <div class="update-panel" id="updatePanel">
+    <div class="update-card">
+      <div class="update-header">
+        <span>UPDATE 1.1</span>
+        <button class="close-btn" onclick="hideUpdatePanel()">✕</button>
+      </div>
+      <div class="update-body">
+        <p>✨ Добавлен Анонимный чат</p>
+        <p>Теперь вы можете начать общение без регистрации — просто нажмите «Анонимный чат» внизу.</p>
+      </div>
     </div>
   </div>
 
@@ -368,6 +451,21 @@ function doReact(em){if(!rTgt||!ws||!activeChat)return;ws.send(JSON.stringify({t
 async function srec(){if(!activeChat)return;try{const s=await navigator.mediaDevices.getUserMedia({audio:true});mRec=new MediaRecorder(s);aCh=[];isRec=true;document.getElementById('mic').classList.add('rec');mRec.ondataavailable=e=>aCh.push(e.data);mRec.onstop=()=>{s.getTracks().forEach(t=>t.stop());const b=new Blob(aCh,{type:'audio/webm'});const r=new FileReader();r.onloadend=()=>{const mid=Date.now().toString(36);addToChat(activeChat,{type:'s',html:'🎤 Голосовое',text:'🎤',time:timeStr(),id:mid});sndS();if(ws)ws.send(JSON.stringify({type:'voice',target:activeChat,audio:r.result,duration:3,msgId:mid}))};r.readAsDataURL(b)};mRec.start()}catch(e){}}
 function erec(){if(mRec&&isRec){mRec.stop();isRec=false;document.getElementById('mic').classList.remove('rec')}}
 
+// Update Panel
+function showUpdatePanel() {
+  const panel = document.getElementById('updatePanel');
+  panel.classList.add('show');
+  // Закрыть через 5 сек, если не закрыли вручную
+  setTimeout(() => {
+    if (panel.classList.contains('show')) {
+      hideUpdatePanel();
+    }
+  }, 5000);
+}
+function hideUpdatePanel() {
+  document.getElementById('updatePanel').classList.remove('show');
+}
+
 // WS
 function handle(m){switch(m.type){
   case'auth_success':myId=m.id;myName=m.displayName;isG=m.isGuest;myAvatar=m.avatar||'👤';myStatus=m.status||'';showChat();
@@ -427,7 +525,7 @@ window.addEventListener('load',()=>{
     document.getElementById('splash').classList.add('hidden');
     document.getElementById('splash').remove();
   }, 1800);
-  initE();initAvatarPick();const s=localStorage.getItem('kc');if(s){const c=JSON.parse(s);document.getElementById('savedInfo').style.display='';document.getElementById('savedU').textContent=c.l}document.addEventListener('click',e=>{if(!e.target.closest('.ep')&&!e.target.closest('.ib'))document.getElementById('eP').classList.remove('show')})});
+  initE();initAvatarPick();const s=localStorage.getItem('kc');if(s){const c=JSON.parse(s);document.getElementById('savedInfo').style.display='';document.getElementById('savedU').textContent=c.l}document.addEventListener('click',e=>{if(!e.target.closest('.ep')&&!e.target.closest('.ib')&&!e.target.closest('.update-panel'))hideUpdatePanel();})});
 </script>
 </body>
 </html>
