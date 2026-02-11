@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KÖRPÜ — Админка</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0a0a0f;
+      color: #e8e8ec;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 800px;
+      width: 100%;
+      background: rgba(255,255,255,.06);
+      border-radius: 16px;
+      padding: 30px;
+    }
+    h1 {
+      color: #00e5a0;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .login-form, .main-content {
+      display: none;
+    }
+    .login-form.active, .main-content.active {
+      display: block;
+    }
+    .field {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #aaa;
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 8px;
+      background: rgba(255,255,255,.04);
+      color: white;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-login {
+      background: #00e5a0;
+      color: #0a0a0f;
+      width: 100%;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+    th {
+      background: rgba(0,229,160,.1);
+      color: #00e5a0;
+      font-weight: 600;
+    }
+    tr:hover {
+      background: rgba(255,255,255,.08);
+    }
+    .actions button {
+      padding: 5px 10px;
+      margin: 0 4px;
+      font-size: 0.85rem;
+    }
+    .btn-delete {
+      background: #ff4d6a;
+      color: white;
+    }
+    .btn-reset {
+      background: #00e5a0;
+      color: #0a0a0f;
+    }
+    .input-pass {
+      padding: 6px 10px;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 5px;
+      background: rgba(255,255,255,.04);
+      color: white;
+      width: 120px;
+    }
+    .status {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+    }
+    .online { background: rgba(0,229,160,.2); color: #00e5a0; }
+    .offline { background: rgba(255,77,106,.2); color: #ff4d6a; }
+    .logout-btn {
+      background: #ff4d6a;
+      color: white;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Форма входа -->
+    <div class="login-form active" id="loginForm">
+      <h1>Вход в админку</h1>
+      <div class="field">
+        <label for="login">Логин</label>
+        <input type="text" id="login" placeholder="Введите логин">
+      </div>
+      <div class="field">
+        <label for="password">Пароль</label>
+        <input type="password" id="password" placeholder="Введите пароль">
+      </div>
+      <button class="btn-login" onclick="login()">Войти</button>
+      <div id="loginError" style="color:#ff4d6a;margin-top:10px;"></div>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="main-content" id="mainContent">
+      <h1>Админ-панель KÖRPÜ</h1>
+      <table id="usersTable">
+        <thead>
+          <tr>
+            <th>Логин</th>
+            <th>Имя</th>
+            <th>Статус</th>
+            <th>Последний вход</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody id="usersBody"></tbody>
+      </table>
+      <button class="logout-btn" onclick="logout()">Выйти</button>
+    </div>
+  </div>
+
+  <script>
+    const SERVER_URL = 'https://korpu-server.onrender.com';
+
+    async function login() {
+      const login = document.getElementById('login').value.trim();
+      const password = document.getElementById('password').value;
+      const errorEl = document.getElementById('loginError');
+
+      if (!login || !password) {
+        errorEl.textContent = 'Заполните все поля';
+        return;
+      }
+
+      try {
+        const res = await fetch(`${SERVER_URL}/admin/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ login, password })
+        });
+
+        if (res.ok) {
+          document.getElementById('loginForm').classList.remove('active');
+          document.getElementById('mainContent').classList.add('active');
+          fetchUsers();
+        } else {
+          const data = await res.json();
+          errorEl.textContent = data.error || 'Ошибка входа';
+        }
+      } catch (error) {
+        errorEl.textContent = 'Не удалось подключиться к серверу';
+      }
+    }
+
+    async function fetchUsers() {
+      try {
+        const res = await fetch(`${SERVER_URL}/admin/users`);
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        renderUsers(data.users);
+      } catch (error) {
+        alert('Ошибка загрузки пользователей: ' + error.message);
+      }
+    }
+
+    function renderUsers(users) {
+      const tbody = document.getElementById('usersBody');
+      tbody.innerHTML = '';
+
+      users.forEach(user => {
+        const row = document.createElement('tr');
+        const isOnline = Date.now() - new Date(user.last_login).getTime() < 5 * 60 * 1000;
+        const statusClass = isOnline ? 'online' : 'offline';
+        const statusText = isOnline ? 'Онлайн' : 'Офлайн';
+
+        row.innerHTML = `
+          <td>${user.login}</td>
+          <td>${user.display_name}</td>
+          <td><span class="status ${statusClass}">${statusText}</span></td>
+          <td>${new Date(user.last_login).toLocaleString('ru-RU')}</td>
+          <td class="actions">
+            <input type="password" class="input-pass" placeholder="Новый пароль" data-login="${user.login}">
+            <button class="btn-reset" onclick="resetPassword('${user.login}', this.previousElementSibling)">🔄</button>
+            <button class="btn-delete" onclick="deleteUser('${user.login}')">🗑</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    async function resetPassword(login, inputField) {
+      const newPass = inputField.value.trim();
+      if (!newPass || newPass.length < 4) {
+        alert('Пароль должен быть минимум 4 символа');
+        return;
+      }
+      try {
+        const res = await fetch(`${SERVER_URL}/admin/resetpass?login=${login}&newpass=${encodeURIComponent(newPass)}`);
+        const data = await res.json();
+        if (data.success) {
+          alert(`✅ Пароль для ${login} изменён!`);
+          inputField.value = '';
+        } else {
+          alert('❌ Ошибка: ' + (data.error || 'Неизвестная ошибка'));
+        }
+      } catch (error) {
+        alert('Не удалось сменить пароль');
+      }
+    }
+
+    async function deleteUser(login) {
+      if (!confirm(`Удалить пользователя "${login}"?`)) return;
+      try {
+        const res = await fetch(`${SERVER_URL}/admin/deleteuser?login=${login}`);
+        const data = await res.json();
+        if (data.success) {
+          alert(`✅ Пользователь ${login} удалён!`);
+          fetchUsers();
+        } else {
+          alert('❌ Ошибка: ' + (data.error || 'Неизвестная ошибка'));
+        }
+      } catch (error) {
+        alert('Не удалось удалить пользователя');
+      }
+    }
+
+    function logout() {
+      // Удаляем куки (просто перезагружаем страницу)
+      document.cookie.split(";").forEach(c => {
+        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+      });
+      document.getElementById('mainContent').classList.remove('active');
+      document.getElementById('loginForm').classList.add('active');
+      document.getElementById('login').value = '';
+      document.getElementById('password').value = '';
+    }
+
+    // Обработка Enter в форме
+    document.getElementById('password').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') login();
+    });
+  </script>
+</body>
+</html>
