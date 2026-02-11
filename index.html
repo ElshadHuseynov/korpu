@@ -445,7 +445,22 @@ function doReg(){const n=document.getElementById('rN').value.trim(),l=document.g
 function doGuest(){const n=document.getElementById('gN').value.trim();if(!n||n.length<2){document.getElementById('aErr').textContent='Минимум 2 символа';return}cwss(()=>{ws.send(JSON.stringify({type:'guest_login',nickname:n}))})}
 function quickL(){const s=JSON.parse(localStorage.getItem('kc'));if(s){document.getElementById('lU').value=s.l;doLogin()}}
 function doLogout(){if(ws)ws.close();myId=null;myName=null;activeChat=null;Object.keys(chats).forEach(k=>delete chats[k]);document.getElementById('authScr').style.display='flex';document.getElementById('chatScr').classList.remove('on');document.getElementById('msgArea').innerHTML='';document.getElementById('chatTabs').innerHTML=''}
-function showChat(){document.getElementById('authScr').style.display='none';document.getElementById('chatScr').classList.add('on');document.getElementById('oBtn').style.display=isG?'none':'';document.getElementById('fBtn').style.display=isG?'none':'';document.getElementById('myIdBar').style.display='flex';document.getElementById('myAvIcon').textContent=myAvatar;document.getElementById('myNameDisp').textContent=myName;document.getElementById('myLoginDisp').textContent=isG?'(аноним)':myId;document.getElementById('myStatusDisp').textContent=myStatus?('• '+myStatus):''}
+function showChat(){
+  document.getElementById('authScr').style.display='none';
+  document.getElementById('chatScr').classList.add('on');
+  document.getElementById('oBtn').style.display=isG?'none':'';
+  document.getElementById('fBtn').style.display=isG?'none':'';
+  document.getElementById('myIdBar').style.display='flex';
+  document.getElementById('myAvIcon').textContent=myAvatar;
+  document.getElementById('myNameDisp').textContent=myName;
+  document.getElementById('myLoginDisp').textContent=isG?'(аноним)':myId;
+  document.getElementById('myStatusDisp').textContent=myStatus?('• '+myStatus):'';
+  
+  // Запрашиваем список друзей при входе
+  if (!isG && ws) {
+    ws.send(JSON.stringify({ type: 'get_friends' }));
+  }
+}
 
 // Copy ID
 function copyMyId(){navigator.clipboard.writeText(myId).then(()=>{const b=document.getElementById('copyBtn');b.textContent='✅ Скопировано!';b.classList.add('copied');setTimeout(()=>{b.textContent='📋 Копировать ID';b.classList.remove('copied')},1500)})}
@@ -457,8 +472,35 @@ function setSt(s){myStatus=s;document.getElementById('myStatusDisp').textContent
 function toggleOL(){document.getElementById('oP').classList.toggle('show');document.getElementById('oBtn').classList.toggle('act')}
 function toggleFL(){document.getElementById('fP').classList.toggle('show');document.getElementById('fBtn').classList.toggle('act')}
 
+// === NEW: renderFriendsList (отдельно от онлайн) ===
+function renderFriendsList() {
+  const friendsEl = document.getElementById('fL');
+  friendsEl.innerHTML = '';
+  let hasFriends = false;
+
+  friendsList.forEach(friend => {
+    hasFriends = true;
+    const d = document.createElement('div');
+    d.className = 'ou';
+    const nm = friend.displayName || friend.id;
+    const st = friend.status ? `<span class="ou-status">• ${friend.status}</span>` : '';
+    d.innerHTML = `
+      <span class="ou-av">${friend.avatar || '🐱'}</span>
+      <span><span class="ou-name">${nm}</span>${st}</span>
+      <button class="btn btn-g" style="font-size:0.6rem;padding:2px 6px;margin-left:6px;" onclick="removeFriend('${friend.id}');event.stopPropagation();">🗑</button>
+    `;
+    d.onclick = () => {
+      document.getElementById('pId').value = friend.id;
+      document.getElementById('fP').classList.remove('show');
+    };
+    friendsEl.appendChild(d);
+  });
+
+  document.getElementById('fP').style.display = hasFriends ? 'block' : 'none';
+}
+
+// === OLD: rOL (только для онлайн-пользователей) ===
 function rOL(users) {
-  // --- Render ONLINE list ---
   const onlineEl = document.getElementById('oL');
   onlineEl.innerHTML = '';
   users.filter(x => x.id !== myId && !x.isGuest).forEach(x => {
@@ -466,7 +508,6 @@ function rOL(users) {
     d.className = 'ou';
     const nm = x.displayName || x.id;
     const st = x.status ? `<span class="ou-status">• ${x.status}</span>` : '';
-    // Кнопка "Добавить в друзья" только для зарегистрированных
     const addBtn = isG ? '' : `<button class="btn btn-g" style="font-size:0.6rem;padding:2px 6px;margin-left:6px;" onclick="addFriend('${x.id}');event.stopPropagation();">➕</button>`;
     d.innerHTML = `
       <span class="ou-av">${x.avatar || '🐱'}</span>
@@ -480,31 +521,6 @@ function rOL(users) {
     };
     onlineEl.appendChild(d);
   });
-
-  // --- Render FRIENDS list ---
-  const friendsEl = document.getElementById('fL');
-  friendsEl.innerHTML = '';
-  let hasFriends = false;
-  users.filter(x => x.id !== myId && !x.isGuest && myFriends.has(x.id)).forEach(x => {
-    hasFriends = true;
-    const d = document.createElement('div');
-    d.className = 'ou';
-    const nm = x.displayName || x.id;
-    const st = x.status ? `<span class="ou-status">• ${x.status}</span>` : '';
-    d.innerHTML = `
-      <span class="ou-av">${x.avatar || '🐱'}</span>
-      <span><span class="ou-name">${nm}</span>${st}</span>
-      <button class="btn btn-g" style="font-size:0.6rem;padding:2px 6px;margin-left:6px;" onclick="removeFriend('${x.id}');event.stopPropagation();">🗑</button>
-    `;
-    d.onclick = () => {
-      document.getElementById('pId').value = x.id;
-      document.getElementById('fP').classList.remove('show');
-    };
-    friendsEl.appendChild(d);
-  });
-
-  // Показываем/скрываем панель друзей
-  document.getElementById('fP').style.display = hasFriends ? 'block' : 'none';
 }
 
 // Chat tabs
@@ -566,6 +582,7 @@ function erec(){if(mRec&&isRec){mRec.stop();isRec=false;document.getElementById(
 
 // Friends
 let myFriends = new Set(); // Хранит login/id друзей
+let friendsList = []; // ← НОВАЯ ПЕРЕМЕННАЯ: полный список друзей
 
 function addFriend(login) {
   if (!ws || !myId || isG) {
@@ -623,21 +640,20 @@ function handle(m){switch(m.type){
     alert('✅ ' + m.friendName + ' добавлен в друзья');
     myFriends.add(m.friendId);
     if(!isG&&ws) {
-      ws.send(JSON.stringify({type:'get_online'}));
-      ws.send(JSON.stringify({type:'get_friends'})); // ← КЛЮЧЕВАЯ СТРОКА
+      ws.send(JSON.stringify({type:'get_friends'})); // Запрашиваем обновлённый список
     }
     break;
   case'friend_removed':
     alert('❌ ' + m.friendName + ' удалён из друзей');
     myFriends.delete(m.friendId);
     if(!isG&&ws) {
-      ws.send(JSON.stringify({type:'get_online'}));
-      ws.send(JSON.stringify({type:'get_friends'})); // ← КЛЮЧЕВАЯ СТРОКА
+      ws.send(JSON.stringify({type:'get_friends'}));
     }
     break;
   case'friends_list':
     myFriends = new Set(m.friends.map(f => f.id));
-    console.log('Friends list loaded:', Array.from(myFriends));
+    friendsList = m.friends; // ← Сохраняем полный список
+    renderFriendsList(); // ← Перерисовываем ТОЛЬКО друзей
     break;
 }}
 
