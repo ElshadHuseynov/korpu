@@ -28,8 +28,8 @@
       --rb:rgba(255,255,255,.06);
       --rbb:rgba(255,255,255,.06);
       --cb:rgba(255,255,255,.06);
-      --tg-safe-area-top: 0px; /* Установится JS */
-      --tg-safe-area-bottom: 0px; /* Установится JS */
+      --tg-safe-area-top: 0px;
+      --tg-safe-area-bottom: 0px;
     }
     html.light{
       --bg:#f0f2f5;
@@ -99,13 +99,13 @@
     .anon-title{font-size:.9rem;font-weight:700;color:var(--tm);margin-bottom:10px}
     .saved-info{font-size:.66rem;color:var(--td);text-align:center;margin-top:8px}.saved-info a{color:var(--a);cursor:pointer;text-decoration:underline}
     .avatar-pick{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:8px 0}
-    .av-opt{width:36px;height:36px;font-size:1.3rem;display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:all .2s;background:var(--glass)}
+    .av-opt{width:36px;height:36px;font-size:1.4rem;display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:all .2s;background:var(--glass)} /* font-size увеличен */
     .av-opt.sel{border-color:var(--a);box-shadow:0 0 10px var(--ag);transform:scale(1.1)}
     .av-opt:hover{border-color:rgba(255,255,255,.2)}
     .chat{display:none;flex-direction:column;flex:1;min-height:0}.chat.on{display:flex}
     .hdr{display:flex;align-items:center;justify-content:space-between;padding:5px 0;margin-bottom:4px;}
-    .logo{font-family:'Space Mono',monospace;font-size:.9rem;font-weight:700;letter-spacing:2px;color:var(--a);text-shadow:0 0 15px var(--ag); cursor: pointer; transition: opacity 0.2s;} /* Добавлен стиль */
-    .logo:hover { opacity: 0.85; } /* Добавлен эффект */
+    .logo{font-family:'Space Mono',monospace;font-size:.9rem;font-weight:700;letter-spacing:2px;color:var(--a);text-shadow:0 0 15px var(--ag); cursor: pointer; transition: opacity 0.2s;}
+    .logo:hover { opacity: 0.85; }
     .hdr-r{display:flex;align-items:center;gap:3px}
     .badge{font-size:.55rem;padding:3px 7px;border-radius:100px;background:rgba(255,255,255,.05);border:1px solid var(--gb);color:var(--td);font-family:'Space Mono',monospace;letter-spacing:.5px;transition:all .5s;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .badge.on{background:var(--ad);border-color:rgba(0,229,160,.3);color:var(--a)}
@@ -164,19 +164,19 @@
 
     /* --- Update Panel --- */
     .update-panel {
-      position: absolute;
-      top: calc(var(--tg-safe-area-top) + 60px); /* отступ от верха + высота hdr */
+      position: fixed;
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%) scale(0.95);
+      transform: translate(-50%, -50%) scale(0.95);
       opacity: 0;
       visibility: hidden;
-      z-index: 100;
+      z-index: 200;
       transition: all 0.3s cubic-bezier(0.17, 0.67, 0.88, 1.01);
     }
     .update-panel.show {
       opacity: 1;
       visibility: visible;
-      transform: translateX(-50%) scale(1);
+      transform: translate(-50%, -50%) scale(1);
     }
 
     .update-card {
@@ -234,12 +234,12 @@
   </style>
 </head>
 <body>
-<div class="splash" id="splash"><img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMGU1YTAiIHN0cm9rZS13aWR0aD0iMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIvPjxjaXJjbGUgY3g9IjkuNSIgY3k9IjguNSIgcj0iMSIvPjxjaXJjbGUgY3g9IjE0LjUiIGN5PSI4LjUiIHI9IjEiLz48cGF0aCBkPSJNOSAxMWMwIDEuNjU0IDIuOTY3IDMgNyAzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=" alt="KÖRPÜ"><div class="splash-text">Загрузка...</div></div>
+<div class="splash" id="splash"><img src="image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYwIiBoZWlnaHQ9IjE2MCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMGU1YTAiIHN0cm9rZS13aWR0aD0iMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIvPjxjaXJjbGUgY3g9IjkuNSIgY3k9IjguNSIgcj0iMSIvPjxjaXJjbGUgY3g9IjE0LjUiIGN5PSI4LjUiIHI9IjEiLz48cGF0aCBkPSJNOSAxMWMwIDEuNjU0IDIuOTY3IDMgNyAzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=" alt="KÖRPÜ"><div class="splash-text">Загрузка...</div></div>
 <div class="app">
 
 <!-- AUTH -->
 <div class="auth" id="authScr">
-  <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDBlNWEwIiBzdHJva2Utd2lkdGg9IjIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiLz48Y2lyY2xlIGN4PSI5LjUiIGN5PSI4LjUiIHI9IjEiLz48Y2lyY2xlIGN4PSIxNC41IiBjeT0iOC41IiByPSIxIi8+PHBhdGggZD0iOSAxMWMwIDEuNjU0IDIuOTY3IDMgNyAzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=" class="auth-logo" alt="">
+  <img src="image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDBlNWEwIiBzdHJva2Utd2lkdGg9IjIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiLz48Y2lyY2xlIGN4PSI5LjUiIGN5PSI4LjUiIHI9IjEiLz48Y2lyY2xlIGN4PSIxNC41IiBjeT0iOC41IiByPSIxIi8+PHBhdGggZD0iOSAxMWMwIDEuNjU0IDIuOTY3IDMgNyAzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48L3N2Zz4=" class="auth-logo" alt="">
   <div class="auth-title">KÖRPÜ</div>
   <div class="auth-sub">Безопасный мессенджер</div>
   <div class="auth-card">
@@ -275,7 +275,7 @@
 <!-- CHAT -->
 <div class="chat" id="chatScr">
   <div class="hdr">
-    <div class="logo" onclick="showUpdatePanel()">KÖRPÜ</div> <!-- Изменён на div с onclick -->
+    <div class="logo" onclick="showUpdatePanel()">KÖRPÜ</div>
     <div class="hdr-r">
       <div class="ib" onclick="isDark=!isDark;document.documentElement.classList.toggle('light',!isDark)">🌙</div>
       <div class="ib" id="oBtn" onclick="toggleOL()" style="display:none">👥</div>
@@ -354,9 +354,33 @@
 <div class="rp" id="rPk"><span onclick="doReact('👍')">👍</span><span onclick="doReact('❤️')">❤️</span><span onclick="doReact('😂')">😂</span><span onclick="doReact('😮')">😮</span><span onclick="doReact('😢')">😢</span><span onclick="doReact('🔥')">🔥</span></div>
 
 <script>
+// === UPDATE PANEL FUNCTIONS (moved to top) ===
+function showUpdatePanel() {
+  const panel = document.getElementById('updatePanel');
+  panel.classList.add('show');
+  clearTimeout(panel.timer);
+  panel.timer = setTimeout(() => {
+    if (panel.classList.contains('show')) {
+      hideUpdatePanel();
+    }
+  }, 5000);
+}
+
+function hideUpdatePanel() {
+  const panel = document.getElementById('updatePanel');
+  panel.classList.remove('show');
+  clearTimeout(panel.timer);
+}
+
+
+// === ORIGINAL SCRIPT LOGIC ===
 const WS='wss://korpu-server.onrender.com';
 const EM=['😀','😂','🤣','😊','😍','🥰','😘','😎','🤩','🥳','😏','😢','😭','😤','🤯','🤔','🤫','🤗','😴','👍','👎','👋','🙏','💪','❤️','🔥','⭐','🎉','💯','✅','❌','💀','👀','🚀','☕','🍕','🎵','🫡','🫶','🤮'];
-const AVATARS=['🐱','🐶','🦊','🐼','🐨','狮子','🐯','🐸','🐵','🦄','🐺','🐰','🐻','🦋','/octet','🐧'];
+// ✅ FIXED: Only emoji in AVATARS array
+const AVATARS = [
+  '🐱', '🐶', '🦊', '🐼', '🐨', '🦁', '🐯', '🐸', '🐵', '🦄',
+  '🐺', '🐰', '🐻', '🦋', '🐙', '🐧', '🦝', '🦉', '🦔', '🦫'
+];
 const STATUSES=['Онлайн','Отдыхаю','Ку-Ку','Он тут','Занят','Играю'];
 
 let ws,myId,myName,myAvatar='🐱',myStatus='Онлайн',isG=false,isDark=true;
@@ -451,21 +475,6 @@ function doReact(em){if(!rTgt||!ws||!activeChat)return;ws.send(JSON.stringify({t
 async function srec(){if(!activeChat)return;try{const s=await navigator.mediaDevices.getUserMedia({audio:true});mRec=new MediaRecorder(s);aCh=[];isRec=true;document.getElementById('mic').classList.add('rec');mRec.ondataavailable=e=>aCh.push(e.data);mRec.onstop=()=>{s.getTracks().forEach(t=>t.stop());const b=new Blob(aCh,{type:'audio/webm'});const r=new FileReader();r.onloadend=()=>{const mid=Date.now().toString(36);addToChat(activeChat,{type:'s',html:'🎤 Голосовое',text:'🎤',time:timeStr(),id:mid});sndS();if(ws)ws.send(JSON.stringify({type:'voice',target:activeChat,audio:r.result,duration:3,msgId:mid}))};r.readAsDataURL(b)};mRec.start()}catch(e){}}
 function erec(){if(mRec&&isRec){mRec.stop();isRec=false;document.getElementById('mic').classList.remove('rec')}}
 
-// Update Panel
-function showUpdatePanel() {
-  const panel = document.getElementById('updatePanel');
-  panel.classList.add('show');
-  // Закрыть через 5 сек, если не закрыли вручную
-  setTimeout(() => {
-    if (panel.classList.contains('show')) {
-      hideUpdatePanel();
-    }
-  }, 5000);
-}
-function hideUpdatePanel() {
-  document.getElementById('updatePanel').classList.remove('show');
-}
-
 // WS
 function handle(m){switch(m.type){
   case'auth_success':myId=m.id;myName=m.displayName;isG=m.isGuest;myAvatar=m.avatar||'👤';myStatus=m.status||'';showChat();
@@ -504,6 +513,7 @@ function doConn(){const t=document.getElementById('pId').value.trim();if(!t||!ws
 function snd(){const i=document.getElementById('mI');const t=i.value.trim();if(!t||!ws||!activeChat)return;const mid=Date.now().toString(36)+Math.random().toString(36).substr(2,3);ws.send(JSON.stringify({type:'message',target:activeChat,text:t,msgId:mid}));addToChat(activeChat,{type:'s',text:t,time:timeStr(),id:mid});sndS();i.value='';document.getElementById('eP').classList.remove('show')}
 let lT=0;function hk(e){if(e.key==='Enter'){snd();return}if(activeChat&&ws&&Date.now()-lT>1000){ws.send(JSON.stringify({type:'typing',target:activeChat}));lT=Date.now()}}
 
+// Telegram & Load logic
 window.addEventListener('load',()=>{
   // Telegram fullscreen & safe area fix
   if(window.Telegram && Telegram.WebApp){
@@ -525,7 +535,14 @@ window.addEventListener('load',()=>{
     document.getElementById('splash').classList.add('hidden');
     document.getElementById('splash').remove();
   }, 1800);
-  initE();initAvatarPick();const s=localStorage.getItem('kc');if(s){const c=JSON.parse(s);document.getElementById('savedInfo').style.display='';document.getElementById('savedU').textContent=c.l}document.addEventListener('click',e=>{if(!e.target.closest('.ep')&&!e.target.closest('.ib')&&!e.target.closest('.update-panel'))hideUpdatePanel();})});
+  initE();initAvatarPick();const s=localStorage.getItem('kc');if(s){const c=JSON.parse(s);document.getElementById('savedInfo').style.display='';document.getElementById('savedU').textContent=c.l}
+  // Обработчик клика вне панели
+  document.addEventListener('click',e=>{
+    if(!e.target.closest('.ep') && !e.target.closest('.ib') && !e.target.closest('.update-panel')){
+      hideUpdatePanel();
+    }
+  });
+});
 </script>
 </body>
 </html>
