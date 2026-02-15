@@ -102,15 +102,15 @@
     .auth{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;animation:fu .5s ease}
     .auth-title{font-family:'Space Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--a);letter-spacing:3px;margin-bottom:2px}
     .auth-sub{font-size:.75rem;color:var(--td);margin-bottom:16px}
-    .auth-card{width:100%;max-width:360px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:20px;backdrop-filter:blur(20px);box-shadow:0 4px 20px rgba(0,0,0,.3)}
+    .auth-card{width:100%;max-width:360px;background:var(--cb);border:1px solid var(--gb);border-radius:16px;padding:20px;backdrop-filter:blur(20px)}
     .tabs{display:flex;margin-bottom:16px;background:var(--glass);border-radius:10px;padding:3px}
     .tab{flex:1;padding:9px;text-align:center;font-size:.78rem;font-weight:600;border-radius:8px;cursor:pointer;transition:all .25s;color:var(--tm)}
     .tab.on{background:var(--a);color:#0a0a0f;box-shadow:0 2px 10px var(--ag)}
     .field{margin-bottom:10px}.field label{display:block;font-size:.58rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--td);margin-bottom:4px;font-family:'Space Mono',monospace}
-    .field input,.field select{width:100%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:10px 12px;color:var(--t);font-family:'Outfit',sans-serif;font-size:.84rem;outline:none;transition:all .3s}
-    html.light .field input,html.light .field select{background:rgba(0,0,0,.06);border-color:rgba(0,0,0,.15)}
+    .field input,.field select{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px 12px;color:var(--t);font-family:'Outfit',sans-serif;font-size:.84rem;outline:none;transition:all .3s}
+    html.light .field input,html.light .field select{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.1)}
     .field input:focus,.field select:focus{border-color:rgba(0,229,160,.4);box-shadow:0 0 0 3px rgba(0,229,160,.08)}
-    .field input::placeholder{color:var(--td);opacity:0.8}
+    .field input::placeholder{color:var(--td)}
     .abtn{width:100%;padding:11px;border:none;border-radius:10px;font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .25s;margin-top:4px}
     .abtn-p{background:var(--a);color:#0a0a0f;box-shadow:0 3px 15px var(--ag)}
     .abtn-p:hover{transform:translateY(-1px)}
@@ -205,13 +205,10 @@
       border: 1px solid var(--gb);
       border-radius: 14px;
       padding: 16px;
-      width: 90%;
-      max-width: 320px;
-      max-height: 80vh;
-      overflow-y: auto;
+      width: 280px;
       box-shadow: 0 8px 30px rgba(0, 229, 160, 0.15);
       backdrop-filter: blur(16px);
-      transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%); /* ← transform moved here */
     }
 
     .update-header {
@@ -340,7 +337,7 @@
   </div>
 
   <!-- Friends panel -->
-  <div class="opanel show" id="fP">
+  <div class="opanel" id="fP" style="display:none">
     <div class="cl">ДРУЗЬЯ</div>
     <div id="fL"></div>
   </div>
@@ -385,20 +382,12 @@
 <div class="update-panel" id="updatePanel">
   <div class="update-card">
     <div class="update-header">
-      <span>📱 KÖRPÜ v5.2</span>
+      <span>UPDATE 1.1</span>
       <button class="close-btn" onclick="hideUpdatePanel()">✕</button>
     </div>
     <div class="update-body">
-      <p style="font-weight:600;color:var(--a);margin-bottom:8px;">🎉 Последние обновления:</p>
-      <p>✅ <strong>Система друзей</strong><br>
-         Добавляй друзей через онлайн-список или по ID</p>
-      <p>💬 <strong>Быстрое подключение</strong><br>
-         Жми кнопку 💬 в списке друзей для мгновенного чата</p>
-      <p>🗑 <strong>Управление друзьями</strong><br>
-         Удаляй друзей прямо из списка</p>
-      <p>📊 <strong>Улучшенный UI</strong><br>
-         Показываем кто уже в друзьях в онлайн-списке</p>
-      <p style="margin-top:8px;font-size:0.65rem;color:var(--td);">16.02.2026 • KÖRPÜ Team</p>
+      <p>✨ Добавлен Анонимный чат</p>
+      <p>Теперь вы можете начать общение без регистрации — просто нажмите «Анонимный чат» внизу.</p>
     </div>
   </div>
 </div>
@@ -517,13 +506,9 @@ function renderFriendsList() {
 
 // === UPDATED: rOL (показываем кто уже в друзьях) ===
 function rOL(users) {
-  console.log('👥 KÖRPÜ: Обновление онлайн списка. Всего пользователей:', users.length);
   const onlineEl = document.getElementById('oL');
   onlineEl.innerHTML = '';
-  const filtered = users.filter(x => x.id !== myId && !x.isGuest);
-  console.log('👥 KÖRPÜ: Видимых онлайн (без себя и гостей):', filtered.length);
-  
-  filtered.forEach(x => {
+  users.filter(x => x.id !== myId && !x.isGuest).forEach(x => {
     const d = document.createElement('div');
     d.className = 'ou';
     const nm = x.displayName || x.id;
@@ -547,7 +532,6 @@ function rOL(users) {
       ${addBtn}
     `;
     d.onclick = () => {
-      console.log('👤 KÖRPÜ: Выбран пользователь:', x.id);
       document.getElementById('pId').value = x.id;
       document.getElementById('oP').classList.remove('show');
     };
@@ -656,17 +640,12 @@ function requestFriendsList() {
 
 // WS
 function handle(m){switch(m.type){
-  case'auth_success':
-    myId=m.id;myName=m.displayName;isG=m.isGuest;myAvatar=m.avatar||'👤';myStatus=m.status||'';
-    console.log('✅ KÖRPÜ: Авторизован как', myId, '('+myName+')');
-    console.log('📋 KÖRPÜ: Твой ID для подключения:', myId);
-    showChat();
+  case'auth_success':myId=m.id;myName=m.displayName;isG=m.isGuest;myAvatar=m.avatar||'👤';myStatus=m.status||'';showChat();
     document.getElementById('stB').textContent=(isG?'АНОНИМ':'ОНЛАЙН');document.getElementById('stB').className='badge on';
     sndC();if(!isG&&ws)ws.send(JSON.stringify({type:'get_online'}));break;
   case'auth_error':document.getElementById('aErr').textContent=m.text;break;
   case'kicked':doLogout();break;
   case'connected':
-    console.log('✅ KÖRPÜ: Подключено к', m.peer, '('+m.displayName+')');
     ensureChat(m.peer,m.displayName,m.avatar);switchChat(m.peer);
     addToChat(m.peer,{type:'y',text:'Подключено к «'+m.displayName+'»'});
     sndC();
@@ -690,19 +669,15 @@ function handle(m){switch(m.type){
     if(!isG&&ws)ws.send(JSON.stringify({type:'get_online'}));break;
   case'online_list':if(!isG)rOL(m.users);break;
   case'user_online':case'user_updated':if(!isG&&ws)ws.send(JSON.stringify({type:'get_online'}));break;
-  case'error':
-    console.error('❌ KÖRPÜ Error:', m.text);
-    alert('❌ ' + m.text);
-    if(activeChat)addToChat(activeChat,{type:'y',text:m.text});
-    break;
+  case'error':if(activeChat)addToChat(activeChat,{type:'y',text:m.text});break;
 
   // === NEW: FRIENDS HANDLING ===
   case'friend_added':
     alert('✅ ' + m.friendName + ' добавлен в друзья');
     myFriends.add(m.friendId);
     if(!isG&&ws) {
-      ws.send(JSON.stringify({type:'get_friends'})); // Запрашиваем обновлённый список
-      ws.send(JSON.stringify({type:'get_online'})); // Обновляем онлайн список
+      ws.send(JSON.stringify({type:'get_friends'}));
+      ws.send(JSON.stringify({type:'get_online'}));
     }
     break;
   case'friend_removed':
@@ -710,32 +685,17 @@ function handle(m){switch(m.type){
     myFriends.delete(m.friendId);
     if(!isG&&ws) {
       ws.send(JSON.stringify({type:'get_friends'}));
-      ws.send(JSON.stringify({type:'get_online'})); // Обновляем онлайн список
+      ws.send(JSON.stringify({type:'get_online'}));
     }
     break;
   case'friends_list':
     myFriends = new Set(m.friends.map(f => f.id));
-    friendsList = m.friends; // ← Сохраняем полный список
-    renderFriendsList(); // ← Перерисовываем ТОЛЬКО друзей
+    friendsList = m.friends;
+    renderFriendsList();
     break;
 }}
 
-function doConn(){
-  const t=document.getElementById('pId').value.trim();
-  if(!t){
-    console.error('❌ KÖRPÜ: ID не указан');
-    alert('❌ Введите ID пользователя');
-    return;
-  }
-  if(!ws){
-    console.error('❌ KÖRPÜ: WebSocket не подключен');
-    alert('❌ Нет соединения с сервером');
-    return;
-  }
-  console.log('🔌 KÖRPÜ: Подключаюсь к:', t);
-  ws.send(JSON.stringify({type:'connect',target:t}));
-  document.getElementById('pId').value='';
-}
+function doConn(){const t=document.getElementById('pId').value.trim();if(!t||!ws)return;ws.send(JSON.stringify({type:'connect',target:t}));document.getElementById('pId').value=''}
 function snd(){const i=document.getElementById('mI');const t=i.value.trim();if(!t||!ws||!activeChat)return;const mid=Date.now().toString(36)+Math.random().toString(36).substr(2,3);ws.send(JSON.stringify({type:'message',target:activeChat,text:t,msgId:mid}));addToChat(activeChat,{type:'s',text:t,time:timeStr(),id:mid});sndS();i.value='';document.getElementById('eP').classList.remove('show')}
 let lT=0;function hk(e){if(e.key==='Enter'){snd();return}if(activeChat&&ws&&Date.now()-lT>1000){ws.send(JSON.stringify({type:'typing',target:activeChat}));lT=Date.now()}}
 
@@ -761,9 +721,6 @@ window.addEventListener('load',()=>{
     document.getElementById('splash').classList.add('hidden');
     document.getElementById('splash').remove();
   }, 1800);
-
-  // Инициализация списка друзей при загрузке
-  renderFriendsList();
 
   // ===== ПРИВЯЗКА ОБРАБОТЧИКА К ЛОГОТИПУ (FIXED) =====
   const logoElement = document.querySelector('.logo');
