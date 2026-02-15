@@ -352,6 +352,9 @@
       <input type="text" id="pId" placeholder="ID или логин...">
       <button class="btn btn-g" onclick="doConn()">Подключиться</button>
     </div>
+    <div class="irow" style="margin-top:5px;" id="addFriendRow">
+      <button class="btn btn-g" style="flex:1;font-size:0.72rem;" onclick="addFriendById()">➕ Добавить в друзья</button>
+    </div>
   </div>
 
   <!-- Chat tabs -->
@@ -450,6 +453,7 @@ function showChat(){
   document.getElementById('chatScr').classList.add('on');
   document.getElementById('oBtn').style.display=isG?'none':'';
   document.getElementById('fBtn').style.display=isG?'none':'';
+  document.getElementById('addFriendRow').style.display=isG?'none':'';
   document.getElementById('myIdBar').style.display='flex';
   document.getElementById('myAvIcon').textContent=myAvatar;
   document.getElementById('myNameDisp').textContent=myName;
@@ -499,7 +503,7 @@ function renderFriendsList() {
   document.getElementById('fP').style.display = hasFriends ? 'block' : 'none';
 }
 
-// === OLD: rOL (только для онлайн-пользователей) ===
+// === UPDATED: rOL (показываем кто уже в друзьях) ===
 function rOL(users) {
   const onlineEl = document.getElementById('oL');
   onlineEl.innerHTML = '';
@@ -508,7 +512,18 @@ function rOL(users) {
     d.className = 'ou';
     const nm = x.displayName || x.id;
     const st = x.status ? `<span class="ou-status">• ${x.status}</span>` : '';
-    const addBtn = isG ? '' : `<button class="btn btn-g" style="font-size:0.6rem;padding:2px 6px;margin-left:6px;" onclick="addFriend('${x.id}');event.stopPropagation();">➕</button>`;
+    
+    // Проверяем, есть ли пользователь уже в друзьях
+    const isFriend = myFriends.has(x.id);
+    let addBtn = '';
+    if (!isG) {
+      if (isFriend) {
+        addBtn = `<button class="btn btn-g" style="font-size:0.6rem;padding:2px 6px;margin-left:6px;background:var(--ad);color:var(--a);border-color:rgba(0,229,160,.3);" onclick="event.stopPropagation();" title="Уже в друзьях">✓ Друг</button>`;
+      } else {
+        addBtn = `<button class="btn btn-g" style="font-size:0.6rem;padding:2px 6px;margin-left:6px;" onclick="addFriend('${x.id}');event.stopPropagation();">➕ Добавить</button>`;
+      }
+    }
+    
     d.innerHTML = `
       <span class="ou-av">${x.avatar || '🐱'}</span>
       <span><span class="ou-name">${nm}</span>${st}</span>
@@ -592,9 +607,29 @@ function addFriend(login) {
   ws.send(JSON.stringify({ type: 'add_friend', friendId: login }));
 }
 
+function addFriendById() {
+  const friendId = document.getElementById('pId').value.trim();
+  if (!friendId) {
+    alert('❌ Введите ID пользователя');
+    return;
+  }
+  if (friendId === myId) {
+    alert('❌ Нельзя добавить себя в друзья');
+    return;
+  }
+  if (myFriends.has(friendId)) {
+    alert('✅ Пользователь уже в друзьях');
+    return;
+  }
+  addFriend(friendId);
+}
+
 function removeFriend(login) {
   if (!ws || !myId || isG) return;
-  ws.send(JSON.stringify({ type: 'remove_friend', friendId: login }));
+  const confirmDelete = confirm(`Удалить ${login} из друзей?`);
+  if (confirmDelete) {
+    ws.send(JSON.stringify({ type: 'remove_friend', friendId: login }));
+  }
 }
 
 function requestFriendsList() {
@@ -641,6 +676,7 @@ function handle(m){switch(m.type){
     myFriends.add(m.friendId);
     if(!isG&&ws) {
       ws.send(JSON.stringify({type:'get_friends'})); // Запрашиваем обновлённый список
+      ws.send(JSON.stringify({type:'get_online'})); // Обновляем онлайн список
     }
     break;
   case'friend_removed':
@@ -648,6 +684,7 @@ function handle(m){switch(m.type){
     myFriends.delete(m.friendId);
     if(!isG&&ws) {
       ws.send(JSON.stringify({type:'get_friends'}));
+      ws.send(JSON.stringify({type:'get_online'})); // Обновляем онлайн список
     }
     break;
   case'friends_list':
