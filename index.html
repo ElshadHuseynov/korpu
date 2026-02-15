@@ -505,9 +505,13 @@ function renderFriendsList() {
 
 // === UPDATED: rOL (показываем кто уже в друзьях) ===
 function rOL(users) {
+  console.log('👥 KÖRPÜ: Обновление онлайн списка. Всего пользователей:', users.length);
   const onlineEl = document.getElementById('oL');
   onlineEl.innerHTML = '';
-  users.filter(x => x.id !== myId && !x.isGuest).forEach(x => {
+  const filtered = users.filter(x => x.id !== myId && !x.isGuest);
+  console.log('👥 KÖRPÜ: Видимых онлайн (без себя и гостей):', filtered.length);
+  
+  filtered.forEach(x => {
     const d = document.createElement('div');
     d.className = 'ou';
     const nm = x.displayName || x.id;
@@ -531,6 +535,7 @@ function rOL(users) {
       ${addBtn}
     `;
     d.onclick = () => {
+      console.log('👤 KÖRPÜ: Выбран пользователь:', x.id);
       document.getElementById('pId').value = x.id;
       document.getElementById('oP').classList.remove('show');
     };
@@ -639,12 +644,17 @@ function requestFriendsList() {
 
 // WS
 function handle(m){switch(m.type){
-  case'auth_success':myId=m.id;myName=m.displayName;isG=m.isGuest;myAvatar=m.avatar||'👤';myStatus=m.status||'';showChat();
+  case'auth_success':
+    myId=m.id;myName=m.displayName;isG=m.isGuest;myAvatar=m.avatar||'👤';myStatus=m.status||'';
+    console.log('✅ KÖRPÜ: Авторизован как', myId, '('+myName+')');
+    console.log('📋 KÖRPÜ: Твой ID для подключения:', myId);
+    showChat();
     document.getElementById('stB').textContent=(isG?'АНОНИМ':'ОНЛАЙН');document.getElementById('stB').className='badge on';
     sndC();if(!isG&&ws)ws.send(JSON.stringify({type:'get_online'}));break;
   case'auth_error':document.getElementById('aErr').textContent=m.text;break;
   case'kicked':doLogout();break;
   case'connected':
+    console.log('✅ KÖRPÜ: Подключено к', m.peer, '('+m.displayName+')');
     ensureChat(m.peer,m.displayName,m.avatar);switchChat(m.peer);
     addToChat(m.peer,{type:'y',text:'Подключено к «'+m.displayName+'»'});
     sndC();
@@ -668,7 +678,11 @@ function handle(m){switch(m.type){
     if(!isG&&ws)ws.send(JSON.stringify({type:'get_online'}));break;
   case'online_list':if(!isG)rOL(m.users);break;
   case'user_online':case'user_updated':if(!isG&&ws)ws.send(JSON.stringify({type:'get_online'}));break;
-  case'error':if(activeChat)addToChat(activeChat,{type:'y',text:m.text});break;
+  case'error':
+    console.error('❌ KÖRPÜ Error:', m.text);
+    alert('❌ ' + m.text);
+    if(activeChat)addToChat(activeChat,{type:'y',text:m.text});
+    break;
 
   // === NEW: FRIENDS HANDLING ===
   case'friend_added':
@@ -694,7 +708,22 @@ function handle(m){switch(m.type){
     break;
 }}
 
-function doConn(){const t=document.getElementById('pId').value.trim();if(!t||!ws)return;ws.send(JSON.stringify({type:'connect',target:t}));document.getElementById('pId').value=''}
+function doConn(){
+  const t=document.getElementById('pId').value.trim();
+  if(!t){
+    console.error('❌ KÖRPÜ: ID не указан');
+    alert('❌ Введите ID пользователя');
+    return;
+  }
+  if(!ws){
+    console.error('❌ KÖRPÜ: WebSocket не подключен');
+    alert('❌ Нет соединения с сервером');
+    return;
+  }
+  console.log('🔌 KÖRPÜ: Подключаюсь к:', t);
+  ws.send(JSON.stringify({type:'connect',target:t}));
+  document.getElementById('pId').value='';
+}
 function snd(){const i=document.getElementById('mI');const t=i.value.trim();if(!t||!ws||!activeChat)return;const mid=Date.now().toString(36)+Math.random().toString(36).substr(2,3);ws.send(JSON.stringify({type:'message',target:activeChat,text:t,msgId:mid}));addToChat(activeChat,{type:'s',text:t,time:timeStr(),id:mid});sndS();i.value='';document.getElementById('eP').classList.remove('show')}
 let lT=0;function hk(e){if(e.key==='Enter'){snd();return}if(activeChat&&ws&&Date.now()-lT>1000){ws.send(JSON.stringify({type:'typing',target:activeChat}));lT=Date.now()}}
 
