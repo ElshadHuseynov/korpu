@@ -205,10 +205,13 @@
       border: 1px solid var(--gb);
       border-radius: 14px;
       padding: 16px;
-      width: 280px;
+      width: 90%;
+      max-width: 320px;
+      max-height: 80vh;
+      overflow-y: auto;
       box-shadow: 0 8px 30px rgba(0, 229, 160, 0.15);
       backdrop-filter: blur(16px);
-      transform: translate(-50%, -50%); /* ← transform moved here */
+      transform: translate(-50%, -50%);
     }
 
     .update-header {
@@ -337,7 +340,7 @@
   </div>
 
   <!-- Friends panel -->
-  <div class="opanel" id="fP" style="display:none">
+  <div class="opanel show" id="fP">
     <div class="cl">ДРУЗЬЯ</div>
     <div id="fL"></div>
   </div>
@@ -382,12 +385,20 @@
 <div class="update-panel" id="updatePanel">
   <div class="update-card">
     <div class="update-header">
-      <span>UPDATE 1.1</span>
+      <span>📱 KÖRPÜ v5.2</span>
       <button class="close-btn" onclick="hideUpdatePanel()">✕</button>
     </div>
     <div class="update-body">
-      <p>✨ Добавлен Анонимный чат</p>
-      <p>Теперь вы можете начать общение без регистрации — просто нажмите «Анонимный чат» внизу.</p>
+      <p style="font-weight:600;color:var(--a);margin-bottom:8px;">🎉 Последние обновления:</p>
+      <p>✅ <strong>Система друзей</strong><br>
+         Добавляй друзей через онлайн-список или по ID</p>
+      <p>💬 <strong>Быстрое подключение</strong><br>
+         Жми кнопку 💬 в списке друзей для мгновенного чата</p>
+      <p>🗑 <strong>Управление друзьями</strong><br>
+         Удаляй друзей прямо из списка</p>
+      <p>📊 <strong>Улучшенный UI</strong><br>
+         Показываем кто уже в друзьях в онлайн-списке</p>
+      <p style="margin-top:8px;font-size:0.65rem;color:var(--td);">16.02.2026 • KÖRPÜ Team</p>
     </div>
   </div>
 </div>
@@ -480,27 +491,28 @@ function toggleFL(){document.getElementById('fP').classList.toggle('show');docum
 function renderFriendsList() {
   const friendsEl = document.getElementById('fL');
   friendsEl.innerHTML = '';
-  let hasFriends = false;
+  
+  if (friendsList.length === 0) {
+    friendsEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--td);font-size:0.7rem;">У тебя пока нет друзей 😔<br><br>Добавь кого-нибудь из онлайн-списка!</div>';
+    return;
+  }
 
   friendsList.forEach(friend => {
-    hasFriends = true;
     const d = document.createElement('div');
     d.className = 'ou';
     const nm = friend.displayName || friend.id;
     const st = friend.status ? `<span class="ou-status">• ${friend.status}</span>` : '';
     d.innerHTML = `
       <span class="ou-av">${friend.avatar || '🐱'}</span>
-      <span><span class="ou-name">${nm}</span>${st}</span>
-      <button class="btn btn-g" style="font-size:0.6rem;padding:2px 6px;margin-left:6px;" onclick="removeFriend('${friend.id}');event.stopPropagation();">🗑</button>
+      <span style="flex:1;">
+        <span class="ou-name">${nm}</span>${st}
+        <div style="font-size:0.55rem;color:var(--td);font-family:'Space Mono',monospace;margin-top:1px;">@${friend.id}</div>
+      </span>
+      <button class="btn btn-p" style="font-size:0.6rem;padding:3px 8px;margin-right:4px;" onclick="document.getElementById('pId').value='${friend.id}';doConn();document.getElementById('fP').classList.remove('show');event.stopPropagation();">💬</button>
+      <button class="btn btn-g" style="font-size:0.6rem;padding:3px 8px;" onclick="removeFriend('${friend.id}');event.stopPropagation();">🗑</button>
     `;
-    d.onclick = () => {
-      document.getElementById('pId').value = friend.id;
-      document.getElementById('fP').classList.remove('show');
-    };
     friendsEl.appendChild(d);
   });
-
-  document.getElementById('fP').style.display = hasFriends ? 'block' : 'none';
 }
 
 // === UPDATED: rOL (показываем кто уже в друзьях) ===
@@ -749,6 +761,9 @@ window.addEventListener('load',()=>{
     document.getElementById('splash').classList.add('hidden');
     document.getElementById('splash').remove();
   }, 1800);
+
+  // Инициализация списка друзей при загрузке
+  renderFriendsList();
 
   // ===== ПРИВЯЗКА ОБРАБОТЧИКА К ЛОГОТИПУ (FIXED) =====
   const logoElement = document.querySelector('.logo');
