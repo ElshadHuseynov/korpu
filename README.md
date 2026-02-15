@@ -1,4 +1,5 @@
 # 🌉 KÖRPÜ — Безопасный мессенджер
+**Сделано с ❤️ by Elshad Huseynov (LORDEL)**
 
 <div align="center">
 
@@ -85,10 +86,11 @@ KÖRPÜ (мост) — это полнофункциональный мессе�
 - 🌐 Мультиязычность (AZ/RU/EN)
 
 ---
+**Сделано с ❤️ by Elshad Huseynov (LORDEL)**
 
 <div align="center">
 
-**Сделано с ❤️ by Elshad Huseynov (LORDEL)**
+
 <div align="center">
 !!!!!All of my projects are provided for informational and educational purposes only. The author is not responsible for any misuse. Please do not use them for illega!!!!!
 
