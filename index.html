@@ -448,8 +448,8 @@ window.addEventListener('load',()=>{
       const csa=tg.contentSafeAreaInset||{top:0,bottom:0,left:0,right:0};
       const top=Math.max(sa.top||0,csa.top||0);
       const bottom=Math.max(sa.bottom||0,csa.bottom||0);
-      document.querySelector('.app').style.paddingTop=(10+top)+'px';
-      document.querySelector('.app').style.paddingBottom=(10+bottom)+'px';
+      document.querySelector('.app').style.paddingTop=(75+top)+'px';
+      document.querySelector('.app').style.paddingBottom=(75+bottom)+'px';
     }
     applySafeArea();
     tg.onEvent('safeAreaChanged',applySafeArea);
