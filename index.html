@@ -2,19 +2,21 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0f">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>KÖRPÜ — Chat</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     .splash{position:fixed;inset:0;z-index:999;background:#0c1a2e;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s,visibility .6s}.splash.hidden{opacity:0;visibility:hidden;pointer-events:none}.splash img{width:160px;height:160px;object-fit:contain;animation:sp 1.5s ease-in-out infinite;filter:drop-shadow(0 0 30px rgba(0,229,160,.3))}.splash-text{margin-top:16px;font-family:'Space Mono',monospace;font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.3)}@keyframes sp{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-    :root{--bg:#0a0a0f;--glass:rgba(255,255,255,.06);--gb:rgba(255,255,255,.08);--a:#00e5a0;--ag:rgba(0,229,160,.3);--ad:rgba(0,229,160,.1);--danger:#ff4d6a;--t:#e8e8ec;--td:rgba(255,255,255,.4);--tm:rgba(255,255,255,.65);--sb:linear-gradient(135deg,rgba(0,229,160,.2),rgba(0,229,160,.08));--sbb:rgba(0,229,160,.15);--rb:rgba(255,255,255,.06);--rbb:rgba(255,255,255,.06);--cb:rgba(255,255,255,.06)}
+    :root{--bg:#0a0a0f;--glass:rgba(255,255,255,.06);--gb:rgba(255,255,255,.08);--a:#00e5a0;--ag:rgba(0,229,160,.3);--ad:rgba(0,229,160,.1);--danger:#ff4d6a;--t:#e8e8ec;--td:rgba(255,255,255,.4);--tm:rgba(255,255,255,.65);--sb:linear-gradient(135deg,rgba(0,229,160,.2),rgba(0,229,160,.08));--sbb:rgba(0,229,160,.15);--rb:rgba(255,255,255,.06);--rbb:rgba(255,255,255,.06);--cb:rgba(255,255,255,.06);--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)}
     html.light{--bg:#f0f2f5;--glass:rgba(0,0,0,.04);--gb:rgba(0,0,0,.08);--a:#00b386;--ag:rgba(0,179,134,.2);--ad:rgba(0,179,134,.08);--t:#1a1a2e;--td:rgba(0,0,0,.4);--tm:rgba(0,0,0,.55);--sb:linear-gradient(135deg,rgba(0,179,134,.15),rgba(0,179,134,.06));--sbb:rgba(0,179,134,.2);--rb:rgba(0,0,0,.04);--rbb:rgba(0,0,0,.06);--cb:rgba(255,255,255,.7)}
     html{font-size:16px}body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;overflow:hidden;transition:background .3s,color .3s}
     body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 20% 50%,rgba(0,229,160,.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(100,60,255,.05) 0%,transparent 50%);animation:bga 20s ease-in-out infinite alternate;z-index:0}@keyframes bga{0%{transform:translate(0,0)}100%{transform:translate(-5%,3%)}}
     body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:60px 60px;z-index:0}
-    .app{position:relative;z-index:1;display:flex;flex-direction:column;height:100vh;max-width:520px;margin:0 auto;padding:10px}
+    .app{position:relative;z-index:1;display:flex;flex-direction:column;height:100vh;max-width:520px;margin:0 auto;padding:10px;padding-top:calc(10px + var(--safe-top));padding-bottom:calc(10px + var(--safe-bottom))}
     @keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
     /* AUTH */
@@ -433,7 +435,27 @@ function snd(){const i=document.getElementById('mI');const t=i.value.trim();if(!
 let lT=0;function hk(e){if(e.key==='Enter'){snd();return}if(activeChat&&ws&&Date.now()-lT>1000){ws.send(JSON.stringify({type:'typing',target:activeChat}));lT=Date.now()}}
 
 window.addEventListener('load',()=>{
-  if(window.Telegram&&Telegram.WebApp){Telegram.WebApp.expand();try{Telegram.WebApp.requestFullscreen()}catch(e){}}
+  // Telegram fullscreen + safe area fix
+  if(window.Telegram&&Telegram.WebApp){
+    const tg=Telegram.WebApp;
+    tg.expand();
+    tg.setHeaderColor('#0a0a0f');
+    tg.setBackgroundColor('#0a0a0f');
+    try{tg.requestFullscreen()}catch(e){}
+    // Apply safe area insets
+    function applySafeArea(){
+      const sa=tg.safeAreaInset||{top:0,bottom:0,left:0,right:0};
+      const csa=tg.contentSafeAreaInset||{top:0,bottom:0,left:0,right:0};
+      const top=Math.max(sa.top||0,csa.top||0);
+      const bottom=Math.max(sa.bottom||0,csa.bottom||0);
+      document.querySelector('.app').style.paddingTop=(10+top)+'px';
+      document.querySelector('.app').style.paddingBottom=(10+bottom)+'px';
+    }
+    applySafeArea();
+    tg.onEvent('safeAreaChanged',applySafeArea);
+    tg.onEvent('contentSafeAreaChanged',applySafeArea);
+    tg.onEvent('fullscreenChanged',applySafeArea);
+  }
   setTimeout(()=>document.getElementById('splash').classList.add('hidden'),1800);
   initE();initAP();
   const s=localStorage.getItem('kc');if(s){const c=JSON.parse(s);document.getElementById('savedInfo').style.display='';document.getElementById('savedU').textContent=c.l}
