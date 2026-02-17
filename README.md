@@ -112,7 +112,6 @@ MIT License
 
 ---
 
-<p align="center">
+
   <b>🌉 KÖRPÜ</b> — мост между людьми<br>
-  <sub>Built with ❤️ and WebSocket</sub>
-</p>
+  
