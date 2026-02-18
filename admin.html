@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KÖRPÜ — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0f;--glass:rgba(255,255,255,.06);--gb:rgba(255,255,255,.08);--a:#00e5a0;--ag:rgba(0,229,160,.3);--ad:rgba(0,229,160,.1);--danger:#ff4d6a;--warn:#fbbf24;--purple:#a78bfa;--t:#e8e8ec;--td:rgba(255,255,255,.4);--tm:rgba(255,255,255,.65);--cb:rgba(255,255,255,.06)}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--t);min-height:100vh}
+body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 20% 50%,rgba(0,229,160,.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(100,60,255,.05) 0%,transparent 50%);z-index:0}
+body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:60px 60px;z-index:0}
+.app{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:20px}
+
+/* Auth */
+.auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh}
+.auth-box{background:var(--cb);border:1px solid var(--gb);border-radius:18px;padding:30px;width:100%;max-width:360px;backdrop-filter:blur(20px);text-align:center}
+.auth-box h1{font-family:'Space Mono',monospace;font-size:1.4rem;color:var(--a);letter-spacing:3px;margin-bottom:4px}
+.auth-box p{color:var(--td);font-size:.8rem;margin-bottom:20px}
+.auth-box input{width:100%;padding:12px 14px;background:rgba(255,255,255,.04);border:1px solid var(--gb);border-radius:10px;color:var(--t);font-size:.9rem;outline:none;font-family:'Outfit',sans-serif;margin-bottom:12px}
+.auth-box input:focus{border-color:rgba(0,229,160,.4);box-shadow:0 0 0 3px rgba(0,229,160,.08)}
+.auth-box input::placeholder{color:var(--td)}
+.auth-box button{width:100%;padding:12px;background:var(--a);color:#0a0a0f;border:none;border-radius:10px;font-size:.9rem;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif}
+.auth-box .err{color:var(--danger);font-size:.78rem;margin-top:6px;min-height:18px}
+
+/* Dashboard */
+.dash{display:none}
+.dash.on{display:block}
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.hdr h1{font-family:'Space Mono',monospace;font-size:1.2rem;color:var(--a);letter-spacing:2px}
+.hdr-r{display:flex;align-items:center;gap:8px}
+.hdr-r .status{font-size:.75rem;padding:5px 12px;border-radius:20px;background:var(--ad);color:var(--a);font-family:'Space Mono',monospace;font-weight:600}
+.hdr-r button{padding:6px 14px;border:1px solid var(--gb);background:var(--glass);color:var(--tm);border-radius:8px;cursor:pointer;font-size:.78rem;font-family:'Outfit',sans-serif}
+.hdr-r button:hover{background:var(--ad);color:var(--a)}
+
+/* Stats grid */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px}
+.stat{background:var(--cb);border:1px solid var(--gb);border-radius:14px;padding:16px;text-align:center;backdrop-filter:blur(20px)}
+.stat .icon{font-size:1.6rem;margin-bottom:6px}
+.stat .val{font-size:1.6rem;font-weight:700;font-family:'Space Mono',monospace;color:var(--a)}
+.stat .lbl{font-size:.68rem;color:var(--td);text-transform:uppercase;letter-spacing:1.5px;margin-top:2px;font-family:'Space Mono',monospace}
+.stat.purple .val{color:var(--purple)}
+.stat.warn .val{color:var(--warn)}
+.stat.danger .val{color:var(--danger)}
+
+/* Sections */
+.section{background:var(--cb);border:1px solid var(--gb);border-radius:14px;padding:16px;margin-bottom:14px;backdrop-filter:blur(20px)}
+.section-title{font-family:'Space Mono',monospace;font-size:.72rem;text-transform:uppercase;letter-spacing:2px;color:var(--td);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.section-title .count{color:var(--a);font-size:.8rem}
+
+/* Tables */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;font-size:.65rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--td);font-family:'Space Mono',monospace;padding:6px 8px;border-bottom:1px solid var(--gb)}
+.tbl td{padding:8px;font-size:.82rem;border-bottom:1px solid rgba(255,255,255,.03)}
+.tbl tr:hover td{background:rgba(255,255,255,.03)}
+.tbl .av{font-size:1.1rem;width:28px;text-align:center}
+.tbl .login{color:var(--td);font-family:'Space Mono',monospace;font-size:.7rem}
+.tbl .num{font-family:'Space Mono',monospace;color:var(--a);font-weight:600}
+.tbl .num.purple{color:var(--purple)}
+
+/* User row actions */
+.act-btn{padding:3px 8px;border-radius:6px;border:1px solid var(--gb);background:var(--glass);color:var(--tm);font-size:.65rem;cursor:pointer;margin:0 2px;font-family:'Outfit',sans-serif}
+.act-btn:hover{background:var(--ad);color:var(--a)}
+.act-btn.danger{border-color:rgba(255,77,106,.2)}.act-btn.danger:hover{background:rgba(255,77,106,.15);color:var(--danger)}
+
+/* Leaderboard medals */
+.medal{font-size:.85rem;margin-right:4px}
+
+/* Search */
+.search-bar{display:flex;gap:8px;margin-bottom:14px}
+.search-bar input{flex:1;padding:10px 14px;background:rgba(255,255,255,.04);border:1px solid var(--gb);border-radius:10px;color:var(--t);font-size:.85rem;outline:none;font-family:'Outfit',sans-serif}
+.search-bar input:focus{border-color:rgba(0,229,160,.4)}
+.search-bar button{padding:10px 18px;background:var(--a);color:#0a0a0f;border:none;border-radius:10px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:8px 16px;border-radius:10px;font-size:.8rem;font-weight:600;cursor:pointer;border:1px solid var(--gb);background:var(--glass);color:var(--tm);white-space:nowrap;transition:all .2s}
+.tab.on{background:var(--ad);border-color:rgba(0,229,160,.3);color:var(--a)}
+
+/* Toast */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:10px 20px;background:var(--a);color:#0a0a0f;border-radius:10px;font-weight:600;font-size:.82rem;z-index:100;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* Responsive */
+@media(max-width:600px){.stats{grid-template-columns:repeat(2,1fr)}.tbl{font-size:.75rem}.app{padding:12px}}
+
+/* Loading */
+.loading{text-align:center;padding:30px;color:var(--td);font-family:'Space Mono',monospace;font-size:.8rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--gb);border-top-color:var(--a);border-radius:50%;animation:spin .6s linear infinite;margin-right:8px;vertical-align:middle}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- Auth -->
+<div class="auth-screen" id="authScr">
+  <div class="auth-box">
+    <h1>KÖRPÜ</h1>
+    <p>🔒 Панель администратора</p>
+    <input type="text" id="apiUrl" placeholder="URL сервера (https://...)" value="https://korpu-server.onrender.com">
+    <input type="password" id="apiKey" placeholder="Секретный ключ...">
+    <button onclick="doAuth()">Войти</button>
+    <div class="err" id="authErr"></div>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div class="dash" id="dash">
+  <div class="hdr">
+    <h1>🌉 KÖRPÜ ADMIN</h1>
+    <div class="hdr-r">
+      <div class="status" id="onlineBadge">● 0 ОНЛАЙН</div>
+      <button onclick="refresh()">🔄 Обновить</button>
+      <button onclick="location.reload()">🚪 Выход</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats" id="statsGrid"></div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab on" onclick="showTab('users')">👥 Пользователи</div>
+    <div class="tab" onclick="showTab('top')">🏆 Рейтинг</div>
+    <div class="tab" onclick="showTab('groups')">💬 Группы</div>
+    <div class="tab" onclick="showTab('online')">🟢 Онлайн</div>
+  </div>
+
+  <!-- Users Tab -->
+  <div class="tab-content" id="tab-users">
+    <div class="search-bar">
+      <input type="text" id="userSearch" placeholder="Поиск по имени или логину..." oninput="filterUsers()">
+      <button onclick="filterUsers()">🔍</button>
+    </div>
+    <div class="section">
+      <div class="section-title"><span>ВСЕ ПОЛЬЗОВАТЕЛИ</span><span class="count" id="usersCount">0</span></div>
+      <div style="overflow-x:auto"><table class="tbl" id="usersTable"><tbody></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- Top Tab -->
+  <div class="tab-content" id="tab-top" style="display:none">
+    <div class="section">
+      <div class="section-title">🏆 ТОП ПО XP</div>
+      <table class="tbl" id="topXPTable"><tbody></tbody></table>
+    </div>
+    <div class="section">
+      <div class="section-title">💬 ТОП ПО СООБЩЕНИЯМ</div>
+      <table class="tbl" id="topMsgTable"><tbody></tbody></table>
+    </div>
+  </div>
+
+  <!-- Groups Tab -->
+  <div class="tab-content" id="tab-groups" style="display:none">
+    <div class="section">
+      <div class="section-title"><span>ГРУППЫ</span><span class="count" id="groupsCount">0</span></div>
+      <table class="tbl" id="groupsTable"><tbody></tbody></table>
+    </div>
+  </div>
+
+  <!-- Online Tab -->
+  <div class="tab-content" id="tab-online" style="display:none">
+    <div class="section">
+      <div class="section-title"><span>СЕЙЧАС ОНЛАЙН</span><span class="count" id="onlineCount">0</span></div>
+      <table class="tbl" id="onlineTable"><tbody></tbody></table>
+    </div>
+  </div>
+</div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+let API='',KEY='',allUsers=[];
+
+function doAuth(){
+  API=document.getElementById('apiUrl').value.trim().replace(/\/$/,'');
+  KEY=document.getElementById('apiKey').value.trim();
+  if(!API||!KEY){document.getElementById('authErr').textContent='Заполните все поля';return}
+  document.getElementById('authErr').textContent='Загрузка...';
+  fetch(API+'/admin/users?key='+encodeURIComponent(KEY))
+    .then(r=>{if(!r.ok)throw new Error('Неверный ключ');return r.json()})
+    .then(d=>{
+      if(d.error){document.getElementById('authErr').textContent=d.error;return}
+      document.getElementById('authScr').style.display='none';
+      document.getElementById('dash').classList.add('on');
+      refresh();
+    })
+    .catch(e=>document.getElementById('authErr').textContent=e.message);
+}
+
+function refresh(){
+  loadStats();loadUsers();loadGroups();loadOnline();
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+function showTab(name){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('on',['users','top','groups','online'][i]===name));
+  document.querySelectorAll('.tab-content').forEach(c=>c.style.display='none');
+  document.getElementById('tab-'+name).style.display='block';
+}
+
+// STATS
+function loadStats(){
+  fetch(API+'/admin/stats?key='+encodeURIComponent(KEY)).then(r=>r.json()).then(d=>{
+    if(d.error)return;
+    document.getElementById('onlineBadge').textContent='● '+d.online+' ОНЛАЙН';
+    const g=document.getElementById('statsGrid');
+    g.innerHTML='';
+    const items=[
+      {icon:'👥',val:d.users.total,lbl:'Пользователей',cls:''},
+      {icon:'🟢',val:d.online,lbl:'Онлайн',cls:''},
+      {icon:'💬',val:d.users.totalMessages,lbl:'Сообщений',cls:'purple'},
+      {icon:'⭐',val:d.users.totalXP,lbl:'Общий XP',cls:'warn'},
+      {icon:'👫',val:d.friends,lbl:'Дружб',cls:''},
+      {icon:'💬',val:d.groups,lbl:'Групп',cls:'purple'},
+      {icon:'🚫',val:d.blocks,lbl:'Блокировок',cls:'danger'},
+      {icon:'📊',val:d.users.avgLevel.toFixed(1),lbl:'Средний LVL',cls:'warn'}
+    ];
+    items.forEach(i=>{
+      const s=document.createElement('div');s.className='stat'+(i.cls?' '+i.cls:'');
+      s.innerHTML='<div class="icon">'+i.icon+'</div><div class="val">'+i.val+'</div><div class="lbl">'+i.lbl+'</div>';
+      g.appendChild(s);
+    });
+
+    // Top XP
+    renderLeaderboard('topXPTable',d.topXP,'xp','XP');
+    renderLeaderboard('topMsgTable',d.topMessages,'messages_count','Сообщений');
+  }).catch(()=>{});
+}
+
+function renderLeaderboard(tableId,data,field,label){
+  const tb=document.getElementById(tableId);
+  const medals=['🥇','🥈','🥉'];
+  let h='<thead><tr><th>#</th><th></th><th>Имя</th><th>'+label+'</th></tr></thead><tbody>';
+  (data||[]).forEach((u,i)=>{
+    h+='<tr><td>'+(medals[i]||'<span style="color:var(--td)">'+(i+1)+'</span>')+'</td>';
+    h+='<td class="av">'+(u.avatar||'🐱')+'</td>';
+    h+='<td>'+u.display_name+'<br><span class="login">@'+u.login+'</span></td>';
+    h+='<td class="num'+(field==='xp'?' purple':'')+'">'+((u[field]||0).toLocaleString())+'</td></tr>';
+  });
+  h+='</tbody>';
+  tb.innerHTML=h;
+}
+
+// USERS
+function loadUsers(){
+  fetch(API+'/admin/users?key='+encodeURIComponent(KEY)).then(r=>r.json()).then(d=>{
+    if(d.error)return;
+    allUsers=d.users||[];
+    document.getElementById('usersCount').textContent=d.total;
+    renderUsers(allUsers);
+  }).catch(()=>{});
+}
+
+function filterUsers(){
+  const q=document.getElementById('userSearch').value.trim().toLowerCase();
+  if(!q){renderUsers(allUsers);return}
+  renderUsers(allUsers.filter(u=>u.login.includes(q)||u.display_name.toLowerCase().includes(q)));
+}
+
+function renderUsers(list){
+  const tb=document.getElementById('usersTable');
+  let h='<thead><tr><th></th><th>Имя / Логин</th><th>LVL</th><th>XP</th><th>Сообщ.</th><th>Регистрация</th><th>Действия</th></tr></thead><tbody>';
+  list.forEach(u=>{
+    const dt=new Date(u.created_at).toLocaleDateString('ru-RU');
+    h+='<tr>';
+    h+='<td class="av">'+(u.avatar||'🐱')+'</td>';
+    h+='<td><strong>'+u.display_name+'</strong><br><span class="login">@'+u.login+'</span></td>';
+    h+='<td class="num purple">'+(u.level||1)+'</td>';
+    h+='<td class="num">'+(u.xp||0)+'</td>';
+    h+='<td class="num">'+(u.messages_count||0)+'</td>';
+    h+='<td style="font-size:.72rem;color:var(--td)">'+dt+'</td>';
+    h+='<td>';
+    h+='<button class="act-btn" onclick="resetPass(\''+u.login+'\')">🔑</button>';
+    h+='<button class="act-btn danger" onclick="deleteUser(\''+u.login+'\',\''+u.display_name+'\')">🗑</button>';
+    h+='</td></tr>';
+  });
+  h+='</tbody>';
+  tb.innerHTML=h;
+}
+
+function resetPass(login){
+  const np=prompt('Новый пароль для @'+login+':');
+  if(!np)return;
+  fetch(API+'/admin/resetpass?key='+encodeURIComponent(KEY)+'&login='+encodeURIComponent(login)+'&newpass='+encodeURIComponent(np))
+    .then(r=>r.json()).then(d=>{
+      if(d.success)toast('✅ Пароль @'+login+' сброшен');
+      else toast('❌ '+d.error);
+    });
+}
+
+function deleteUser(login,name){
+  if(!confirm('Удалить пользователя «'+name+'» (@'+login+')?'))return;
+  if(!confirm('Вы уверены? Это действие необратимо!'))return;
+  fetch(API+'/admin/deleteuser?key='+encodeURIComponent(KEY)+'&login='+encodeURIComponent(login))
+    .then(r=>r.json()).then(d=>{
+      if(d.success){toast('🗑 @'+login+' удалён');loadUsers();loadStats()}
+      else toast('❌ '+d.error);
+    });
+}
+
+// GROUPS
+function loadGroups(){
+  fetch(API+'/admin/groups?key='+encodeURIComponent(KEY)).then(r=>r.json()).then(d=>{
+    if(d.error)return;
+    document.getElementById('groupsCount').textContent=d.total;
+    const tb=document.getElementById('groupsTable');
+    let h='<thead><tr><th></th><th>Название</th><th>Владелец</th><th>Участников</th><th>Создана</th></tr></thead><tbody>';
+    (d.groups||[]).forEach(g=>{
+      const dt=new Date(g.created_at).toLocaleDateString('ru-RU');
+      h+='<tr><td class="av">'+(g.avatar||'👥')+'</td>';
+      h+='<td><strong>'+g.name+'</strong><br><span class="login">'+g.id+'</span></td>';
+      h+='<td>@'+g.owner+'</td>';
+      h+='<td class="num">'+(g.member_count||0)+'</td>';
+      h+='<td style="font-size:.72rem;color:var(--td)">'+dt+'</td></tr>';
+    });
+    h+='</tbody>';
+    tb.innerHTML=h;
+  }).catch(()=>{});
+}
+
+// ONLINE
+function loadOnline(){
+  fetch(API+'/online').then(r=>r.json()).then(d=>{
+    document.getElementById('onlineCount').textContent=(d.users||[]).length;
+    const tb=document.getElementById('onlineTable');
+    let h='<thead><tr><th></th><th>Имя</th><th>Статус</th><th>LVL</th><th>Тип</th></tr></thead><tbody>';
+    (d.users||[]).forEach(u=>{
+      h+='<tr><td class="av">'+(u.avatar||'👤')+'</td>';
+      h+='<td><strong>'+u.displayName+'</strong><br><span class="login">'+u.id+'</span></td>';
+      h+='<td style="font-size:.78rem">'+(u.status||'—')+'</td>';
+      h+='<td class="num purple">'+(u.level||0)+'</td>';
+      h+='<td>'+(u.isGuest?'<span style="color:var(--td)">Гость</span>':'<span style="color:var(--a)">Юзер</span>')+'</td></tr>';
+    });
+    if((d.users||[]).length===0)h+='<tr><td colspan="5" style="text-align:center;color:var(--td);padding:20px">Никого нет онлайн</td></tr>';
+    h+='</tbody>';
+    tb.innerHTML=h;
+  }).catch(()=>{});
+}
+
+// Auto-refresh every 15s
+setInterval(()=>{if(document.getElementById('dash').classList.contains('on'))refresh()},15000);
+
+// Enter to login
+document.getElementById('apiKey').addEventListener('keydown',e=>{if(e.key==='Enter')doAuth()});
+</script>
+</body>
+</html>
