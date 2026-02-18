@@ -1,90 +1,62 @@
 <div align="center">
 
-```
-██╗  ██╗ ██████╗ ██████╗ ██████╗ ██╗   ██╗
-██║ ██╔╝██╔═══██╗██╔══██╗██╔══██╗██║   ██║
-█████╔╝ ██║   ██║██████╔╝██████╔╝██║   ██║
-██╔═██╗ ██║   ██║██╔══██╗██╔═══╝ ██║   ██║
-██║  ██╗╚██████╔╝██║  ██║██║     ╚██████╔╝
-╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝      ╚═════╝ 
-```
+<img src="logo.png" width="140" alt="KÖRPÜ">
 
-### 🌉 *Мост между людьми* | Real-time Messenger for Telegram
+# 🌉 KÖRPÜ
 
-<br/>
+### *мост между людьми*
 
-[![Version](https://img.shields.io/badge/version-7.0.0-6C63FF?style=for-the-badge&logo=semver&logoColor=white)](https://github.com)
-[![Platform](https://img.shields.io/badge/Telegram-Web_App-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me)
-[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
-[![Node.js](https://img.shields.io/badge/Node.js-WebSocket-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://postgresql.org)
-[![License](https://img.shields.io/badge/License-MIT-FF6B6B?style=for-the-badge)](LICENSE)
+**Безопасный мессенджер нового поколения для Telegram**
 
-<br/>
+[![Version](https://img.shields.io/badge/version-8.0-00e5a0?style=for-the-badge&labelColor=0a0a0f)](https://github.com)
+[![Platform](https://img.shields.io/badge/Telegram-Mini_App-26A5E4?style=for-the-badge&logo=telegram&logoColor=white&labelColor=0a0a0f)](https://telegram.org)
+[![Tech](https://img.shields.io/badge/WebSocket-Real--time-a78bfa?style=for-the-badge&labelColor=0a0a0f)](https://github.com)
 
-> **KÖRPÜ** (азерб. *мост*) — мессенджер нового поколения прямо внутри Telegram.  
-> Молниеносная доставка сообщений, мини-игры, система уровней и полноценные профили — всё в одном месте.
+---
 
-<br/>
+*KÖRPÜ (азерб. «мост») — это не просто чат.*
+*Это пространство, где люди находят друг друга,*
+*играют, соревнуются и строят сообщества.*
 
-![Preview](https://img.shields.io/badge/🎨_Design-Glassmorphism-blueviolet?style=flat-square)
-![Status](https://img.shields.io/badge/Status-Active_Development-brightgreen?style=flat-square)
-![Messages](https://img.shields.io/badge/Latency-<50ms-success?style=flat-square)
+*Работает прямо внутри Telegram как Mini App.*
+*Никаких скачиваний. Открыл — и ты на мосту.*
+
+---
 
 </div>
 
----
-
-## 📋 Содержание
-
-- [✨ Что нового в v7.0](#-что-нового-в-v70)
-- [🚀 Возможности](#-возможности)
-- [🏗️ Архитектура](#️-архитектура)
-- [⚙️ Установка](#️-установка)
-- [🗄️ База данных](#️-база-данных)
-- [🔌 WebSocket API](#-websocket-api)
-- [🎮 Мини-игры](#-мини-игры)
-- [📊 Система XP и уровней](#-система-xp-и-уровней)
-- [🛡️ Безопасность](#️-безопасность)
-- [🚢 Деплой на Render](#-деплой-на-render)
-- [📸 Скриншоты](#-скриншоты)
-- [🤝 Контрибьютинг](#-контрибьютинг)
-
----
-
-## ✨ Что нового в v7.0
+## ✦ Что умеет KÖRPÜ
 
 <table>
 <tr>
-<td width="50%">
+<td width="50%" valign="top">
 
-### 🆕 Новые фичи
+### 💬 Мессенджер
+Общение в реальном времени через WebSocket. Мгновенная доставка, никаких задержек.
 
-| Функция | Статус |
-|---------|--------|
-| 💬 Reply на сообщения | ✅ Готово |
-| 🔍 Поиск пользователей | ✅ Готово |
-| 🚫 Система блокировок | ✅ Готово |
-| 🪨📄✂️ Мини-игра (RPS) | ✅ Готово |
-| ⭐ XP-система и уровни | ✅ Готово |
-| 👤 Расширенные профили | ✅ Готово |
-| 👥 Система друзей v2 | ✅ Готово |
-| 📊 Статистика и достижения | ✅ Готово |
+- Личные сообщения
+- Групповые чаты
+- Голосовые сообщения с кастомным плеером
+- Ответ на сообщения (reply с цитатой)
+- Реакции 👍 ❤️ 😂 😮 😢 🔥
+- Индикатор «печатает...»
+- Доставка ✓ и прочтение ✓✓
+- 40 эмодзи в панели
 
 </td>
-<td width="50%">
+<td width="50%" valign="top">
 
-### 🔧 Улучшения
+### 👥 Социальная сеть
+Не просто переписка — целая экосистема связей.
 
-| Компонент | Изменение |
-|-----------|-----------|
-| WebSocket | Оптимизирован пинг/понг |
-| PostgreSQL | Исправлена связь на Render |
-| UI/UX | Glassmorphism обновлён |
-| Друзья | Добавление/удаление + UI |
-| Сообщения | Статусы доставки в реальном времени |
-| Профили | Детальная статистика переписок |
-| Безопасность | Улучшена валидация токенов |
+- Система друзей
+- Блокировка пользователей
+- Поиск по имени и логину
+- Профили с детальной статистикой
+- Редактируемое «О себе»
+- 16 аватаров-животных
+- Пользовательские статусы
+- Список онлайн
 
 </td>
 </tr>
@@ -92,437 +64,177 @@
 
 ---
 
-## 🚀 Возможности
+## 🏆 Геймификация
 
 <div align="center">
 
+*Каждое сообщение — это шаг вперёд.*
+
+| | Действие | Награда |
+|---|---|---|
+| 💬 | Сообщение | **+2 XP** |
+| 🎤 | Голосовое | **+3 XP** |
+| 🎲 | Победа в КНБ | **+10 XP** |
+
+</div>
+
+### 📊 10 уровней прогресса
+
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    KÖRPÜ FEATURES                        │
-├──────────────────┬──────────────────┬───────────────────┤
-│   💬 MESSAGING   │   👥 SOCIAL      │   🎮 GAMING       │
-├──────────────────┼──────────────────┼───────────────────┤
-│ Real-time чат    │ Система друзей   │ Камень-ножницы    │
-│ Reply функция    │ Поиск юзеров     │ Бумага ✂️          │
-│ Статусы онлайн   │ Блокировки       │ XP за победы      │
-│ История чатов    │ Профили          │ Лидерборды        │
-│ Индикатор печати │ Статистика       │ Достижения        │
-├──────────────────┼──────────────────┼───────────────────┤
-│   ⚡ TECH         │   🎨 DESIGN      │   🔒 SECURITY     │
-├──────────────────┼──────────────────┼───────────────────┤
-│ WebSocket WS     │ Glassmorphism    │ Telegram Auth     │
-│ PostgreSQL       │ Анимации         │ HMAC валидация    │
-│ Node.js backend  │ Dark theme       │ Rate limiting     │
-│ Python бот       │ Адаптивность     │ Блокировки        │
-└──────────────────┴──────────────────┴───────────────────┘
+ LVL 1  ░░░░░░░░░░  0 XP        Новичок
+ LVL 3  ███░░░░░░░  150 XP      Знакомое лицо
+ LVL 5  █████░░░░░  500 XP      Опытный
+ LVL 7  ███████░░░  1200 XP     Мастер
+ LVL 10 ██████████  3500 XP     Легенда
 ```
+
+### 🎲 Камень-Ножницы-Бумага
+
+Вызови друга на дуэль прямо из списка друзей. 🪨 📄 ✂️
+Победитель получает **+10 XP** и славу.
+
+### 📊 Опросы
+
+Создавай голосования в групповых чатах. Голоса обновляются в реальном времени.
+
+---
+
+## 🏅 12 достижений
+
+<div align="center">
+
+*Собери их все.*
+
+| | Достижение | Условие |
+|---|---|---|
+| 💬 | **Первое слово** | Отправить 1 сообщение |
+| 📝 | **Болтун** | 100 сообщений |
+| 🗣 | **Оратор** | 1000 сообщений |
+| ⭐ | **Опытный** | Достичь 5 уровня |
+| 👑 | **Легенда** | Достичь 10 уровня |
+| 🤝 | **Дружба** | Добавить первого друга |
+| 👥 | **Популярный** | 10 друзей |
+| 🎲 | **Победитель** | Первая победа в игре |
+| 🏆 | **Чемпион** | 10 побед |
+| 📅 | **Старожил** | Неделя в чате |
+| 🗓 | **Долгожитель** | Месяц в чате |
+| ✏️ | **Личность** | Заполнить «О себе» |
+
+</div>
+
+Достижения появляются как красивый тост с анимацией. Все бейджи отображаются в профиле — заработанные сияют, остальные ждут своего часа.
+
+---
+
+## 👤 Профиль
+
+Каждый пользователь — это история.
+
+```
+      🐱
+    LORDEL
+    @lordel
+  LVL 7  ● Онлайн
+
+  💬 2,847    📅 45 дней    👫 23
+
+  XP: ████████░░  1340 / 1800
+
+  🎲 Игры: 18/24 (75%)
+  📅 Регистрация: 12.01.2025
+
+  🏅 💬 📝 ⭐ 🤝 🎲 📅 ✏️
+```
+
+Нажми на любого пользователя — откроется его профиль со статистикой, достижениями и кнопкой «Написать».
+
+---
+
+## 🌐 3 языка
+
+<div align="center">
+
+**`RU`** Русский — **`EN`** English — **`AZ`** Azərbaycanca
+
+</div>
+
+Переключатель в боковом меню. Весь интерфейс, достижения, ошибки и плейсхолдеры переведены. Язык сохраняется между сессиями.
+
+---
+
+## 🔐 Безопасность
+
+- **PBKDF2 + соль** — пароли хешируются, никогда не хранятся в открытом виде
+- **Блокировка** — заблокированный не может написать вам, проверка на сервере
+- **Анонимный режим** — войди без регистрации под любым именем
+- **Защита от двойного входа** — предыдущая сессия автоматически завершается
+- **Админ-панель** — защищена секретным ключом
+
+---
+
+## 🎨 Дизайн
+
+<div align="center">
+
+| | |
+|---|---|
+| 🌙 | Тёмная и светлая тема |
+| 💎 | Glassmorphism эффекты |
+| ☰ | Компактное боковое меню |
+| 📱 | Адаптивный мобильный UI |
+| 🖥 | Telegram Safe Area + Fullscreen |
+| ✨ | Анимации и splash screen |
 
 </div>
 
 ---
 
-## 🏗️ Архитектура
+## 📊 Админ-дашборд
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                         KÖRPÜ v7.0                               │
-│                                                                   │
-│  ┌─────────────┐      ┌──────────────┐      ┌─────────────────┐ │
-│  │  Telegram   │◄────►│  Python Bot  │◄────►│   PostgreSQL    │ │
-│  │   Client    │      │  (aiogram)   │      │   Database      │ │
-│  └──────┬──────┘      └──────────────┘      └────────┬────────┘ │
-│         │                                            │           │
-│         │ WebApp                                     │           │
-│         ▼                                            ▼           │
-│  ┌─────────────┐      ┌──────────────┐      ┌─────────────────┐ │
-│  │  Frontend   │◄────►│  Node.js WS  │◄────►│     Redis       │ │
-│  │  HTML/CSS   │  WS  │   Server     │      │    (cache)      │ │
-│  │  JavaScript │      │  Express     │      └─────────────────┘ │
-│  └─────────────┘      └──────────────┘                          │
-└─────────────────────────────────────────────────────────────────┘
-```
+Отдельная веб-панель для управления мессенджером:
 
-### 📁 Структура проекта
-
-```
-körpü/
-├── 📂 bot/
-│   ├── 🐍 main.py              # Точка входа бота
-│   ├── 🐍 handlers.py          # Обработчики команд
-│   ├── 🐍 database.py          # Работа с PostgreSQL
-│   └── 🐍 middlewares.py       # Мидлвары
-├── 📂 server/
-│   ├── 📜 index.js             # WebSocket сервер
-│   ├── 📜 routes.js            # REST API роуты
-│   ├── 📜 websocket.js         # WS обработчики
-│   └── 📜 db.js                # Pool соединений
-├── 📂 webapp/
-│   ├── 🌐 index.html           # Главная страница
-│   ├── 🌐 chat.html            # Страница чата
-│   ├── 🌐 profile.html         # Профиль пользователя
-│   ├── 🌐 friends.html         # Друзья
-│   ├── 🌐 game.html            # Мини-игра RPS
-│   ├── 🎨 styles/
-│   │   ├── main.css            # Основные стили
-│   │   └── glass.css           # Glassmorphism
-│   └── 📜 scripts/
-│       ├── app.js              # Основная логика
-│       ├── ws.js               # WebSocket клиент
-│       └── game.js             # Логика игры
-├── 📂 migrations/
-│   └── 🗄️ schema.sql           # Схема БД
-├── 📄 .env.example             # Пример конфига
-├── 📄 requirements.txt         # Python зависимости
-├── 📄 package.json             # Node зависимости
-└── 📄 render.yaml              # Конфиг деплоя
-```
+- **8 карточек** со статистикой в реальном времени
+- **Таблица пользователей** с поиском, сбросом пароля и удалением
+- **ТОП-10** по XP и сообщениям с медалями 🥇🥈🥉
+- **Список групп** с владельцами и участниками
+- **Мониторинг онлайна** — кто сейчас в сети
+- Автообновление каждые 15 секунд
 
 ---
 
-## ⚙️ Установка
-
-### Требования
-
-- Python `3.11+`
-- Node.js `18+`
-- PostgreSQL `14+`
-- Telegram Bot Token
-
-### 🔧 Быстрый старт
-
-```bash
-# 1. Клонируй репозиторий
-git clone https://github.com/yourusername/korpu.git
-cd korpu
-
-# 2. Настрой окружение
-cp .env.example .env
-nano .env  # Заполни переменные
-
-# 3. Установи зависимости Python
-pip install -r requirements.txt
-
-# 4. Установи зависимости Node.js
-npm install
-
-# 5. Создай таблицы в БД
-psql $DATABASE_URL < migrations/schema.sql
-
-# 6. Запусти сервер
-npm start &
-
-# 7. Запусти бота
-python bot/main.py
-```
-
-### 🔑 Переменные окружения
-
-```env
-# ─── Telegram ─────────────────────────────
-BOT_TOKEN=your_bot_token_here
-WEBAPP_URL=https://your-app.onrender.com
-
-# ─── Database ─────────────────────────────
-DATABASE_URL=postgresql://user:pass@host:5432/korpu
-DB_SSL=true
-
-# ─── Server ───────────────────────────────
-PORT=3000
-WS_PORT=3001
-SECRET_KEY=your_secret_key_32_chars_min
-
-# ─── Features ─────────────────────────────
-MAX_MESSAGE_LENGTH=4096
-XP_PER_MESSAGE=5
-XP_PER_WIN=50
-```
-
----
-
-## 🗄️ База данных
-
-### Схема таблиц
-
-```sql
--- Пользователи
-CREATE TABLE users (
-    id          BIGINT PRIMARY KEY,          -- Telegram ID
-    username    VARCHAR(50),
-    first_name  VARCHAR(100) NOT NULL,
-    avatar_url  TEXT,
-    xp          INTEGER DEFAULT 0,
-    level       INTEGER DEFAULT 1,
-    is_banned   BOOLEAN DEFAULT FALSE,
-    last_seen   TIMESTAMP DEFAULT NOW(),
-    created_at  TIMESTAMP DEFAULT NOW()
-);
-
--- Сообщения
-CREATE TABLE messages (
-    id          SERIAL PRIMARY KEY,
-    chat_id     BIGINT NOT NULL,
-    sender_id   BIGINT REFERENCES users(id),
-    content     TEXT NOT NULL,
-    reply_to    INTEGER REFERENCES messages(id),  -- ← NEW v7.0
-    is_read     BOOLEAN DEFAULT FALSE,
-    created_at  TIMESTAMP DEFAULT NOW()
-);
-
--- Друзья
-CREATE TABLE friendships (
-    id          SERIAL PRIMARY KEY,
-    user_id     BIGINT REFERENCES users(id),
-    friend_id   BIGINT REFERENCES users(id),
-    status      VARCHAR(20) DEFAULT 'pending',    -- ← UPDATED v7.0
-    created_at  TIMESTAMP DEFAULT NOW(),
-    UNIQUE(user_id, friend_id)
-);
-
--- Блокировки (NEW v7.0)
-CREATE TABLE blocks (
-    id          SERIAL PRIMARY KEY,
-    blocker_id  BIGINT REFERENCES users(id),
-    blocked_id  BIGINT REFERENCES users(id),
-    created_at  TIMESTAMP DEFAULT NOW(),
-    UNIQUE(blocker_id, blocked_id)
-);
-
--- Статистика игр (NEW v7.0)
-CREATE TABLE game_stats (
-    user_id     BIGINT PRIMARY KEY REFERENCES users(id),
-    wins        INTEGER DEFAULT 0,
-    losses      INTEGER DEFAULT 0,
-    draws       INTEGER DEFAULT 0,
-    xp_earned   INTEGER DEFAULT 0
-);
-```
-
----
-
-## 🔌 WebSocket API
-
-### События клиент → сервер
-
-```javascript
-// Отправить сообщение
-ws.send(JSON.stringify({
-    type: "message",
-    chat_id: 123456789,
-    content: "Привет!",
-    reply_to: 42          // ← NEW: ID сообщения для reply
-}));
-
-// Поиск пользователей
-ws.send(JSON.stringify({
-    type: "search_users",
-    query: "username"
-}));
-
-// Заблокировать пользователя
-ws.send(JSON.stringify({
-    type: "block_user",
-    target_id: 987654321
-}));
-
-// Запрос игры
-ws.send(JSON.stringify({
-    type: "game_invite",
-    opponent_id: 111222333
-}));
-```
-
-### События сервер → клиент
-
-```javascript
-// Новое сообщение
-{ type: "new_message", message: { id, content, sender, reply_to, timestamp } }
-
-// Пользователь онлайн
-{ type: "user_online",  user_id: 123456789 }
-
-// Результат игры
-{ type: "game_result",  result: "win", xp_gained: 50 }
-
-// Обновление уровня
-{ type: "level_up",     new_level: 5, xp: 1250 }
-```
-
----
-
-## 🎮 Мини-игры
-
-### 🪨📄✂️ Камень-Ножницы-Бумага
+## 📋 История обновлений
 
 ```
-Правила:
-  🪨 Камень   > ✂️ Ножницы
-  📄 Бумага   > 🪨 Камень  
-  ✂️ Ножницы  > 📄 Бумага
-
-Награды:
-  🏆 Победа   → +50 XP
-  🤝 Ничья    → +10 XP
-  💀 Поражение → +0 XP (но опыт!)
+v8.0  ████████████████████  🏅 Достижения · 🌐 Мультиязычность · ☰ Новое меню
+v7.0  ████████████████░░░░  ↩️ Reply · 🔍 Поиск · 🚫 Блокировка · 🎲 КНБ · 🏆 Уровни
+v6.0  ████████████░░░░░░░░  👫 Друзья · 💬 Группы · 📋 Changelog
+v5.0  ████████░░░░░░░░░░░░  🎤 Голосовые · ⚡ Статусы · 🐱 Аватары
+v4.0  ████░░░░░░░░░░░░░░░░  🌙 Темы · 😊 Эмодзи · 💬 Реакции · 📑 Табы
+v3.0  ██░░░░░░░░░░░░░░░░░░  🗄 PostgreSQL · 🔐 Регистрация · 🛡 Админка
 ```
-
----
-
-## 📊 Система XP и уровней
-
-| Уровень | XP необходимо | Звание | Эмодзи |
-|---------|--------------|--------|--------|
-| 1 | 0 | Новичок | 🌱 |
-| 2 | 100 | Ученик | 📚 |
-| 3 | 300 | Активный | ⚡ |
-| 5 | 800 | Опытный | 🔥 |
-| 10 | 2500 | Ветеран | ⭐ |
-| 15 | 6000 | Мастер | 💎 |
-| 20 | 12000 | Легенда | 👑 |
-
-**XP зарабатывается за:**
-- 💬 Отправку сообщений (+5 XP)
-- 🏆 Победу в игре (+50 XP)
-- 👥 Добавление друга (+20 XP)
-- 📅 Ежедневный вход (+15 XP)
-
----
-
-## 🛡️ Безопасность
-
-```python
-# Валидация Telegram WebApp данных
-import hmac
-import hashlib
-
-def validate_init_data(init_data: str, bot_token: str) -> bool:
-    """Проверка подлинности данных от Telegram"""
-    parsed = dict(chunk.split("=") for chunk in init_data.split("&"))
-    received_hash = parsed.pop("hash")
-    
-    data_check_string = "\n".join(
-        f"{k}={v}" for k, v in sorted(parsed.items())
-    )
-    
-    secret_key = hmac.new(
-        b"WebAppData", bot_token.encode(), hashlib.sha256
-    ).digest()
-    
-    expected_hash = hmac.new(
-        secret_key, data_check_string.encode(), hashlib.sha256
-    ).hexdigest()
-    
-    return hmac.compare_digest(expected_hash, received_hash)
-```
-
----
-
-## 🚢 Деплой на Render
-
-### render.yaml
-
-```yaml
-services:
-  # WebSocket сервер
-  - type: web
-    name: korpu-server
-    runtime: node
-    buildCommand: npm install
-    startCommand: npm start
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: korpu-db
-          property: connectionString
-
-  # Telegram бот
-  - type: worker
-    name: korpu-bot
-    runtime: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: python bot/main.py
-
-databases:
-  - name: korpu-db
-    plan: free
-    databaseName: korpu
-    user: korpu_user
-```
-
-### ⚠️ Решение проблем с PostgreSQL на Render
-
-```python
-# Обязательно добавь SSL для Render
-import asyncpg
-
-async def create_pool():
-    return await asyncpg.create_pool(
-        dsn=DATABASE_URL,
-        ssl="require",          # ← Критично для Render!
-        min_size=2,
-        max_size=10,
-        command_timeout=60
-    )
-```
-
----
-
-## 📸 Скриншоты
-
-<div align="center">
-
-| Главный экран | Чат | Профиль |
-|:---:|:---:|:---:|
-| 🖼️ | 🖼️ | 🖼️ |
-| Список чатов | Real-time переписка | XP и статистика |
-
-| Друзья | Мини-игра | Поиск |
-|:---:|:---:|:---:|
-| 🖼️ | 🖼️ | 🖼️ |
-| Управление друзьями | RPS с XP | Поиск пользователей |
-
-</div>
-
----
-
-## 🤝 Контрибьютинг
-
-1. Форкни репозиторий
-2. Создай ветку: `git checkout -b feature/amazing-feature`
-3. Закоммить: `git commit -m 'feat: add amazing feature'`
-4. Запушить: `git push origin feature/amazing-feature`
-5. Открой Pull Request
-
----
-
-## 📈 Roadmap
-
-- [ ] 🎵 Голосовые сообщения
-- [ ] 📸 Отправка медиа-файлов
-- [ ] 🌐 Групповые чаты
-- [ ] 🤖 AI-ассистент внутри чата
-- [ ] 🏅 Система достижений
-- [ ] 📱 Push-уведомления
-- [ ] 🌍 Мультиязычность
 
 ---
 
 <div align="center">
 
-**KÖRPÜ** — соединяем людей, один мессенджер за раз 🌉
+### 🏗 Технологии
 
-<br/>
+**Node.js** · **WebSocket** · **PostgreSQL** · **Telegram Web App API**
 
-[![Telegram](https://img.shields.io/badge/Telegram-@yourbot-2CA5E0?style=for-the-badge&logo=telegram)](https://t.me/yourbot)
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)](https://github.com)
+---
 
-<br/>
+<sub>
 
-*Сделано с ❤️ и большим количеством ☕*
+🌉 **KÖRPÜ** — это мост.
 
-<br/>
+Между людьми. Между языками. Между идеями.
 
-```
-© 2024-2025 KÖRPÜ • MIT License
-```
+Открой Telegram. Нажми кнопку. Ты уже здесь.
+
+</sub>
+
+---
+
+*Built with ❤️ and WebSocket*
 
 </div>
