@@ -565,7 +565,7 @@ function dkClickCard(cardId){
     if(g.table.length===0||unbeaten.length===0){
       // Direct attack/throw
       const action=g.table.length===0?'attack':'throw';
-      ws.send(JSON.stringify({type:'durak_action',gameId:g.id,action,cardId}));
+      ws.send(JSON.stringify({type:'durak_action',gameId:g.gameId,action,cardId}));
     }else{
       dkSel=cardId;dkRender();
     }
@@ -577,15 +577,15 @@ function dkClickCard(cardId){
 }
 function dkDefendSlot(idx){
   if(!dkGame||!dkSel)return;
-  ws.send(JSON.stringify({type:'durak_action',gameId:dkGame.id,action:'defend',cardId:dkSel,tableIdx:idx}));
+  ws.send(JSON.stringify({type:'durak_action',gameId:dkGame.gameId,action:'defend',cardId:dkSel,tableIdx:idx}));
   dkSel=null;dkSelDefend=null;
 }
 function dkAction(action){
   if(!dkGame||!ws)return;
-  if(action==='throwSel'&&dkSel){ws.send(JSON.stringify({type:'durak_action',gameId:dkGame.id,action:'throw',cardId:dkSel}));dkSel=null;return}
-  ws.send(JSON.stringify({type:'durak_action',gameId:dkGame.id,action}));
+  if(action==='throwSel'&&dkSel){ws.send(JSON.stringify({type:'durak_action',gameId:dkGame.gameId,action:'throw',cardId:dkSel}));dkSel=null;return}
+  ws.send(JSON.stringify({type:'durak_action',gameId:dkGame.gameId,action}));
 }
-function dkResign(){if(!dkGame||!ws)return;if(!confirm(t('resignConfirm')||'Сдаться?'))return;ws.send(JSON.stringify({type:'durak_resign',gameId:dkGame.id}))}
+function dkResign(){if(!dkGame||!ws)return;if(!confirm(t('resignConfirm')||'Сдаться?'))return;ws.send(JSON.stringify({type:'durak_resign',gameId:dkGame.gameId}))}
 let sto;function doSearch(){clearTimeout(sto);sto=setTimeout(()=>{const q=document.getElementById('searchI').value.trim();if(q.length<2){document.getElementById('searchR').innerHTML='';return}fetch(API+'/search?q='+encodeURIComponent(q)).then(r=>r.json()).then(d=>{const el=document.getElementById('searchR');el.innerHTML='';(d.users||[]).forEach(u=>{const isFr=friendsList.some(f=>f.id===u.id);const div=document.createElement('div');div.className='p-row';div.innerHTML='<span class="av">'+u.avatar+'</span><span class="name">'+u.displayName+' <span class="lvl-badge">LV'+u.level+'</span> '+(isFr?'<span class="friend-badge">друг</span>':'')+'</span><div class="p-row-actions"><button class="mini-btn" onclick="event.stopPropagation();document.getElementById(\'pId\').value=\''+u.id+'\';doConn();toggleP(\'sP\')">💬</button>'+(isFr?'':'<button class="mini-btn" onclick="event.stopPropagation();addFD(\''+u.id+'\')">➕</button>')+'<button class="mini-btn danger" onclick="event.stopPropagation();blockU(\''+u.id+'\')">🚫</button></div><div class="dot '+(u.online?'on':'off')+'"></div>';el.appendChild(div)})}).catch(()=>{})},300)}
 function renderFriends(){const el=document.getElementById('fL2');el.innerHTML='';friendsList.forEach(f=>{const d=document.createElement('div');d.className='p-row';d.innerHTML='<span class="av">'+f.avatar+'</span><span class="name">'+f.displayName+' <span class="lvl-badge">LV'+f.level+'</span></span><span class="st">'+(f.status?'• '+f.status:'')+'</span><div class="p-row-actions"><button class="mini-btn" onclick="event.stopPropagation();document.getElementById(\'pId\').value=\''+f.id+'\';doConn()">💬</button><button class="mini-btn" onclick="event.stopPropagation();rpsInv(\''+f.id+'\')">🎲</button><button class="mini-btn" onclick="event.stopPropagation();ckInvite(\''+f.id+'\')">♟</button><button class="mini-btn danger" onclick="event.stopPropagation();remFr(\''+f.id+'\')">✕</button><button class="mini-btn danger" onclick="event.stopPropagation();blockU(\''+f.id+'\')">🚫</button></div><div class="dot '+(f.online?'on':'off')+'"></div>';el.appendChild(d)});renderGM()}
 function addFriend(){const l=document.getElementById('addFI').value.trim();if(!l||!ws)return;ws.send(JSON.stringify({type:'add_friend',login:l}));document.getElementById('addFI').value=''}
