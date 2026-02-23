@@ -606,9 +606,13 @@ function spinWheel(){
 }
 function animateWheel(targetIdx){
   const seg=WHEEL_SEGMENTS.length;const arc=2*Math.PI/seg;
-  // Spin 5+ full rotations + land on target segment
+  // Pointer is at top (12 o'clock = -PI/2 from 0)
+  // Segment i starts at angle i*arc from 0. We need segment center under pointer.
+  // The wheel rotates by wheelAngle, so segment i center is at: i*arc + arc/2 + wheelAngle
+  // We need: i*arc + arc/2 + finalAngle = -PI/2 (mod 2PI) => pointer at top
+  // So: finalAngle = -PI/2 - targetIdx*arc - arc/2
   const spins=5+Math.random()*3;
-  const targetAngle=-(targetIdx*arc+arc/2)+Math.PI/2;// point to top
+  const targetAngle= -Math.PI/2 - targetIdx*arc - arc/2;
   const finalAngle=spins*2*Math.PI+targetAngle;
   const c=document.getElementById('wheelCvs');if(!c)return;
   const start=wheelAngle;const diff=finalAngle-start;
@@ -616,7 +620,6 @@ function animateWheel(targetIdx){
   function tick(ts){
     if(!startTime)startTime=ts;
     const p=Math.min((ts-startTime)/duration,1);
-    // ease out cubic
     const ease=1-Math.pow(1-p,3);
     wheelAngle=start+diff*ease;
     drawWheel(wheelAngle);
