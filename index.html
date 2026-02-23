@@ -181,12 +181,34 @@
     @keyframes pet-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
     .pet-mini-info{text-align:left}.pet-mini-name{font-weight:600;font-size:.82rem}.pet-mini-lvl{font-size:.58rem;color:#a78bfa;font-family:'Space Mono',monospace}
     .pet-modal{background:rgba(6,6,14,.97);border-radius:22px;width:94%;max-width:380px;max-height:90vh;overflow-y:auto;animation:fu .35s ease;backdrop-filter:blur(30px);border:1px solid rgba(255,255,255,.06)}
-    .pet-scene{position:relative;height:300px;background:linear-gradient(180deg,#0b1628 0%,#132844 30%,#1a4a3a 65%,#0f3025 100%);border-radius:22px 22px 0 0;overflow:hidden;display:flex;align-items:flex-end;justify-content:center;padding-bottom:10px}
+    .pet-scene{position:relative;height:300px;border-radius:22px 22px 0 0;overflow:hidden;display:flex;align-items:flex-end;justify-content:center;padding-bottom:10px;transition:background 1s ease}
+    .pet-scene.day{background:linear-gradient(180deg,#1a6fc4 0%,#5bb8f5 25%,#8dd4a8 65%,#3d8c5c 100%)}
+    .pet-scene.sunset{background:linear-gradient(180deg,#2d1b4e 0%,#c0392b 25%,#e67e22 50%,#4a7a3d 100%)}
+    .pet-scene.night{background:linear-gradient(180deg,#0b1628 0%,#132844 30%,#1a4a3a 65%,#0f3025 100%)}
+    .pet-scene.morning{background:linear-gradient(180deg,#1a3a5c 0%,#e8a87c 30%,#87ceeb 55%,#4a8c5c 100%)}
+    .pet-sun{position:absolute;width:40px;height:40px;border-radius:50%;z-index:1;filter:blur(2px)}
+    .pet-sun.day{top:12%;right:18%;background:radial-gradient(circle,#fff4a3,#ffd700);box-shadow:0 0 30px rgba(255,215,0,.4)}
+    .pet-sun.sunset{top:35%;right:15%;background:radial-gradient(circle,#ff6b35,#ff4500);box-shadow:0 0 40px rgba(255,69,0,.3)}
+    .pet-sun.morning{top:28%;left:18%;background:radial-gradient(circle,#ffeaa7,#fdcb6e);box-shadow:0 0 25px rgba(253,203,110,.4)}
+    .pet-moon{position:absolute;top:10%;right:20%;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f0e68c,#ddd);box-shadow:0 0 20px rgba(240,230,140,.2);z-index:1}
     .pet-scene::before{content:'';position:absolute;top:15%;left:50%;width:120px;height:120px;background:radial-gradient(circle,rgba(255,200,50,.06),transparent 70%);transform:translateX(-50%);border-radius:50%;filter:blur(20px)}
     .pet-scene-stars{position:absolute;top:0;left:0;right:0;height:45%;pointer-events:none}
     .pet-scene-ground{position:absolute;bottom:0;left:0;right:0;height:35%;background:linear-gradient(180deg,rgba(34,197,94,.06) 0%,rgba(34,197,94,.03) 50%,rgba(16,70,50,.15) 100%)}
     .pet-scene-grass{position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,rgba(34,197,94,.2),rgba(34,197,94,.1),rgba(34,197,94,.2))}
     .pet-platform{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);width:100px;height:14px;background:radial-gradient(ellipse,rgba(0,229,160,.15),transparent 70%);border-radius:50%;z-index:1}
+    .pet-speech{position:absolute;top:8%;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.92);color:#1a1a2e;padding:8px 14px;border-radius:14px 14px 14px 4px;font-size:.72rem;font-weight:600;max-width:180px;text-align:center;z-index:10;animation:speech-in .4s ease;box-shadow:0 3px 12px rgba(0,0,0,.2)}
+    .pet-speech::after{content:'';position:absolute;bottom:-6px;left:20px;width:0;height:0;border-left:8px solid rgba(255,255,255,.92);border-bottom:8px solid transparent}
+    @keyframes speech-in{0%{opacity:0;transform:translateX(-50%) translateY(8px) scale(.8)}100%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+    .pet-emotion{position:absolute;top:18%;right:15%;font-size:2rem;z-index:5;animation:emotion-pop .6s ease forwards;pointer-events:none}
+    @keyframes emotion-pop{0%{opacity:0;transform:scale(0) rotate(-20deg)}40%{opacity:1;transform:scale(1.3) rotate(10deg)}100%{opacity:0;transform:scale(.8) translateY(-20px)}}
+    .pet-food-menu{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;padding:0 2px}
+    .pet-food-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:10px;border:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.02);cursor:pointer;transition:all .2s;font-size:.55rem}
+    .pet-food-item:hover{background:rgba(0,229,160,.06);border-color:rgba(0,229,160,.15);transform:translateY(-2px)}
+    .pet-food-item:active{transform:scale(.93)}
+    .pet-food-item .pf-icon{font-size:1.3rem}.pet-food-item .pf-cost{color:#fbbf24;font-family:'Space Mono',monospace}
+    .pet-food-item.disabled{opacity:.3;pointer-events:none}
+    .pet-room-items{position:absolute;bottom:0;left:0;right:0;height:40%;pointer-events:none;z-index:1}
+    .pet-furniture{position:absolute;font-size:1.4rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))}
     .pet-character{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;animation:pet-idle 3s ease-in-out infinite;cursor:pointer;transition:transform .2s;margin-bottom:6px}
     .pet-character:hover{transform:scale(1.06)}
     .pet-character:active{transform:scale(.9)}
@@ -366,9 +388,9 @@ function renderThemeDots(){
   c.innerHTML=THEMES.map(t=>'<div class="theme-dot'+(t.id===curTheme?' sel':'')+'" style="background:'+t.color+'" onclick="setTheme(\''+t.id+'\')"></div>').join('');
 }
 const L={
-  ru:{login:'Войти',register:'Регистрация',loginField:'Логин',passField:'Пароль',nameField:'Имя',avatarField:'Аватар',enterLogin:'Введите логин...',enterPass:'Введите пароль...',enterName:'Ваше имя...',onlyLetters:'Только буквы и цифры...',min4:'Минимум 4 символа...',doLogin:'Войти',doReg:'Зарегистрироваться',or:'или',anonChat:'🕶 Анонимный чат',nickname:'Ваш никнейм',enterNick:'Придумайте имя...',enterAnon:'Войти анонимно',lastLogin:'Последний вход:',fillAll:'Заполните все поля',min2:'Минимум 2 символа',offline:'ОФЛАЙН',online:'ОНЛАЙН',anon:'АНОНИМ',msg:'Сообщение...',idOrLogin:'ID или логин...',status:'СТАТУС',onlineList:'Онлайн',friends:'Друзья',groups:'Группы',search:'Поиск',setStatus:'Статус',copyId:'Копировать ID',whatsNew:'Что нового?',myProfile:'Мой профиль',logout:'Выйти',blocked:'ЗАБЛОКИРОВАННЫЕ',createGrp:'СОЗДАТЬ ГРУППУ',grpName:'Имя группы...',pickFriends:'ВЫБЕРИ ДРУЗЕЙ',create:'Создать',searchUsers:'ПОИСК ПОЛЬЗОВАТЕЛЕЙ',nameOrLogin:'Имя или логин...',friendLogin:'Логин друга...',connect:'Подключиться',connected:'Подключено к',notOnline:'не в сети',typing:'печатает...',achUnlocked:'ДОСТИЖЕНИЕ',messages:'Сообщений',days:'Дней',friendsN:'Друзей',experience:'ОПЫТ',games:'Игры',regDate:'Регистрация',lastVisit:'Последний визит',write:'Написать',addFriend:'В друзья',close:'Закрыть',achievements:'ДОСТИЖЕНИЯ',aboutMe:'О себе...',checkers:'ШАШКИ',yourTurn:'Ваш ход',oppTurn:'Ход соперника',resign:'Сдаться',resignConfirm:'Сдаться?',ckInviteSent:'Приглашение в шашки отправлено',ckInviteMsg:'приглашает в шашки!',accept:'Принять',gameOver:'ИГРА ОКОНЧЕНА',oppResigned:'Соперник сдался!',youWin:'Вы победили!',youLose:'Вы проиграли',games2:'Игры',rps:'Камень-Ножницы-Бумага',rpsDesc:'Классическая игра на удачу',checkersName:'Шашки',checkersDesc:'Стратегическая настольная игра',pickOpponent:'ВЫБЕРИ СОПЕРНИКА',noFriendsOnline:'Нет друзей онлайн',durakName:'Дурак',durakDesc:'Классическая карточная игра',youAttack:'Вы атакуете',youDefend:'Вы защищаетесь',takCards:'Забрать',donAtk:'Бита',throwMore:'Подкинуть',deckLeft:'Колода',trumpSuit:'Козырь',dkInviteSent:'Приглашение в Дурака отправлено',dkInviteMsg:'приглашает в Дурака!',sound:'Звук',justNow:'только что',minAgo:'мин назад',hAgo:'ч назад',dAgo:'д назад',tttName:'Крестики-нолики',tttDesc:'Классика на 3×3',tttInviteSent:'Приглашение в крестики-нолики',tttInviteMsg:'приглашает в крестики-нолики!',yourMark:'Вы',oppMark:'Соперник',draw:'Ничья!',shop:'Магазин',coins:'монет',premiumAvatars:'ПРЕМИУМ АВАТАРЫ',titles:'ТИТУЛЫ',boosts:'БУСТЫ',buySuccess:'Куплено!',notEnough:'Недостаточно монет',leaderboard:'Рейтинг',lbXP:'По XP',lbMsg:'Сообщения',lbWins:'Победы',lbCoins:'Монеты',lbEmpty:'Пусто',channels:'Каналы',chCreate:'Создать',chJoin:'Подписаться',chLeave:'Отписаться',chOwner:'автор',chMembers:'подписч.',chOnlyOwner:'Только автор может писать',chPost:'Опубликовать',social:'ОБЩЕНИЕ',entertainment:'РАЗВЛЕЧЕНИЯ',settings:'НАСТРОЙКИ',logout:'Выйти',wheel:'Колесо фортуны',wheelSpin:'КРУТИТЬ',wheelCooldown:'Следующий спин через',wheelMin:'мин',wheelWon:'Выигрыш!',wheelLost:'Пусто!',wheelJackpot:'ДЖЕКПОТ!',weatherLoading:'Загрузка...',petFeed:'Кормить',petPlay:'Играть',petAdopt:'Заведи питомца!',petNamePrompt:'Назови питомца:',petTap:'Нажми сюда',petChoose:'Выбери своего компаньона',petAdoptBtn:'Завести!',petHunger:'Голод',petHappy:'Радость',petMood:'Настр.',petPet:'Гладить',petFree:'Бесплатно',petMoodGreat:'Супер!',petMoodGood:'Хорошо',petMoodOk:'Норм',petMoodSad:'Грустно',petMoodCritical:'Критично!',petWash:'Купать',petSleep:'Спать',petTrick:'Трюк',petMenu:'Питомец'},
-  en:{login:'Login',register:'Register',loginField:'Login',passField:'Password',nameField:'Name',avatarField:'Avatar',enterLogin:'Enter login...',enterPass:'Enter password...',enterName:'Your name...',onlyLetters:'Letters and numbers...',min4:'Min 4 characters...',doLogin:'Sign In',doReg:'Register',or:'or',anonChat:'🕶 Anonymous chat',nickname:'Your nickname',enterNick:'Choose name...',enterAnon:'Enter anonymously',lastLogin:'Last login:',fillAll:'Fill all fields',min2:'Min 2 characters',offline:'OFFLINE',online:'ONLINE',anon:'ANON',msg:'Message...',idOrLogin:'ID or login...',status:'STATUS',onlineList:'Online',friends:'Friends',groups:'Groups',search:'Search',setStatus:'Status',copyId:'Copy ID',whatsNew:'What\'s new?',myProfile:'My Profile',logout:'Log out',blocked:'BLOCKED',createGrp:'CREATE GROUP',grpName:'Group name...',pickFriends:'PICK FRIENDS',create:'Create',searchUsers:'SEARCH USERS',nameOrLogin:'Name or login...',friendLogin:'Friend login...',connect:'Connect',connected:'Connected to',notOnline:'is offline',typing:'typing...',achUnlocked:'ACHIEVEMENT',messages:'Messages',days:'Days',friendsN:'Friends',experience:'XP',games:'Games',regDate:'Registered',lastVisit:'Last visit',write:'Message',addFriend:'Add friend',close:'Close',achievements:'ACHIEVEMENTS',aboutMe:'About me...',checkers:'CHECKERS',yourTurn:'Your turn',oppTurn:'Opponent\'s turn',resign:'Resign',resignConfirm:'Resign?',ckInviteSent:'Checkers invite sent',ckInviteMsg:'invites you to checkers!',accept:'Accept',gameOver:'GAME OVER',oppResigned:'Opponent resigned!',youWin:'You won!',youLose:'You lost',games2:'Games',rps:'Rock-Paper-Scissors',rpsDesc:'Classic luck game',checkersName:'Checkers',checkersDesc:'Strategy board game',pickOpponent:'PICK OPPONENT',noFriendsOnline:'No friends online',durakName:'Durak',durakDesc:'Classic Russian card game',youAttack:'You attack',youDefend:'You defend',takCards:'Take',donAtk:'Done',throwMore:'Throw',deckLeft:'Deck',trumpSuit:'Trump',dkInviteSent:'Durak invite sent',dkInviteMsg:'invites you to Durak!',sound:'Sound',justNow:'just now',minAgo:'min ago',hAgo:'h ago',dAgo:'d ago',tttName:'Tic-Tac-Toe',tttDesc:'Classic 3×3 game',tttInviteSent:'Tic-tac-toe invite sent',tttInviteMsg:'invites you to tic-tac-toe!',yourMark:'You',oppMark:'Opponent',draw:'Draw!',shop:'Shop',coins:'coins',premiumAvatars:'PREMIUM AVATARS',titles:'TITLES',boosts:'BOOSTS',buySuccess:'Purchased!',notEnough:'Not enough coins',leaderboard:'Leaderboard',lbXP:'By XP',lbMsg:'Messages',lbWins:'Wins',lbCoins:'Coins',lbEmpty:'Empty',channels:'Channels',chCreate:'Create',chJoin:'Subscribe',chLeave:'Unsubscribe',chOwner:'owner',chMembers:'subs',chOnlyOwner:'Only owner can post',chPost:'Publish',social:'SOCIAL',entertainment:'ENTERTAINMENT',settings:'SETTINGS',logout:'Logout',wheel:'Fortune Wheel',wheelSpin:'SPIN',wheelCooldown:'Next spin in',wheelMin:'min',wheelWon:'You won!',wheelLost:'Nothing!',wheelJackpot:'JACKPOT!',weatherLoading:'Loading...',petFeed:'Feed',petPlay:'Play',petAdopt:'Adopt a pet!',petNamePrompt:'Name your pet:',petTap:'Tap here',petChoose:'Choose your companion',petAdoptBtn:'Adopt!',petHunger:'Hunger',petHappy:'Happy',petMood:'Mood',petPet:'Pet',petFree:'Free',petMoodGreat:'Great!',petMoodGood:'Good',petMoodOk:'Okay',petMoodSad:'Sad',petMoodCritical:'Critical!',petWash:'Wash',petSleep:'Sleep',petTrick:'Trick',petMenu:'Pet'},
-  az:{login:'Daxil ol',register:'Qeydiyyat',loginField:'Login',passField:'Şifrə',nameField:'Ad',avatarField:'Avatar',enterLogin:'Login daxil edin...',enterPass:'Şifrə daxil edin...',enterName:'Adınız...',onlyLetters:'Hərf və rəqəmlər...',min4:'Minimum 4 simvol...',doLogin:'Daxil ol',doReg:'Qeydiyyatdan keç',or:'və ya',anonChat:'🕶 Anonim çat',nickname:'Ləqəbiniz',enterNick:'Ad seçin...',enterAnon:'Anonim daxil ol',lastLogin:'Son giriş:',fillAll:'Bütün sahələri doldurun',min2:'Minimum 2 simvol',offline:'OFFLAYn',online:'ONLAYN',anon:'ANONİM',msg:'Mesaj...',idOrLogin:'ID və ya login...',status:'STATUS',onlineList:'Onlayn',friends:'Dostlar',groups:'Qruplar',search:'Axtar',setStatus:'Status',copyId:'ID kopyala',whatsNew:'Yeniliklər',myProfile:'Profilim',logout:'Çıxış',blocked:'BLOKLANMIŞ',createGrp:'QRUP YARAT',grpName:'Qrup adı...',pickFriends:'DOST SEÇ',create:'Yarat',searchUsers:'İSTİFADƏÇİ AXTAR',nameOrLogin:'Ad və ya login...',friendLogin:'Dost logini...',connect:'Qoşul',connected:'Qoşuldu:',notOnline:'onlayn deyil',typing:'yazır...',achUnlocked:'NAİLİYYƏT',messages:'Mesaj',days:'Gün',friendsN:'Dost',experience:'XP',games:'Oyun',regDate:'Qeydiyyat',lastVisit:'Son giriş',write:'Yaz',addFriend:'Dost əlavə et',close:'Bağla',achievements:'NAİLİYYƏTLƏR',aboutMe:'Haqqında...',checkers:'DAMA',yourTurn:'Sizin növbə',oppTurn:'Rəqibin növbəsi',resign:'Təslim ol',resignConfirm:'Təslim olursan?',ckInviteSent:'Dama dəvəti göndərildi',ckInviteMsg:'sizi damaya dəvət edir!',accept:'Qəbul et',gameOver:'OYUN BİTDİ',oppResigned:'Rəqib təslim oldu!',youWin:'Siz qazandınız!',youLose:'Siz uduzudunuz',games2:'Oyunlar',rps:'Daş-Kağız-Qayçı',rpsDesc:'Klassik şans oyunu',checkersName:'Dama',checkersDesc:'Strateji masa oyunu',pickOpponent:'RƏQİB SEÇ',noFriendsOnline:'Onlayn dost yoxdur',durakName:'Durak',durakDesc:'Klassik kart oyunu',youAttack:'Siz hücum edirsiniz',youDefend:'Siz müdafiə edirsiniz',takCards:'Götür',donAtk:'Bitdi',throwMore:'At',deckLeft:'Dəstə',trumpSuit:'Kozır',dkInviteSent:'Durak dəvəti göndərildi',dkInviteMsg:'sizi Duraka dəvət edir!',sound:'Səs',justNow:'indicə',minAgo:'dəq əvvəl',hAgo:'saat əvvəl',dAgo:'gün əvvəl',tttName:'X və O',tttDesc:'Klassik 3×3 oyun',tttInviteSent:'X və O dəvəti göndərildi',tttInviteMsg:'sizi X və O oyununa dəvət edir!',yourMark:'Siz',oppMark:'Rəqib',draw:'Heç-heçə!',shop:'Mağaza',coins:'sikkə',premiumAvatars:'PREMİUM AVATARLAR',titles:'TİTULLAR',boosts:'BUSTLAR',buySuccess:'Alındı!',notEnough:'Kifayət qədər sikkə yoxdur',leaderboard:'Reytinq',lbXP:'XP üzrə',lbMsg:'Mesajlar',lbWins:'Qələbələr',lbCoins:'Sikkələr',lbEmpty:'Boşdur',channels:'Kanallar',chCreate:'Yarat',chJoin:'Abunə ol',chLeave:'Abunəni ləğv et',chOwner:'müəllif',chMembers:'abunəçi',chOnlyOwner:'Yalnız müəllif yaza bilər',chPost:'Dərc et',social:'ÜNSIYYƏT',entertainment:'ƏYLƏNCƏ',settings:'TƏNZIMLƏMƏLƏR',logout:'Çıxış',wheel:'Şans çarxı',wheelSpin:'FIRLA',wheelCooldown:'Növbəti fırlanma',wheelMin:'dəq',wheelWon:'Qazandın!',wheelLost:'Boş!',wheelJackpot:'CEKPOT!',weatherLoading:'Yüklənir...',petFeed:'Yedirt',petPlay:'Oyna',petAdopt:'Heyvan saxla!',petNamePrompt:'Heyvanın adı:',petTap:'Bura bas',petChoose:'Yoldaşını seç',petAdoptBtn:'Saxla!',petHunger:'Aclıq',petHappy:'Xoşbəxt',petMood:'Əhval',petPet:'Sığal',petFree:'Pulsuz',petMoodGreat:'Əla!',petMoodGood:'Yaxşı',petMoodOk:'Normal',petMoodSad:'Kədərli',petMoodCritical:'Kritik!',petWash:'Yu',petSleep:'Yat',petTrick:'Hünər',petMenu:'Heyvan'}
+  ru:{login:'Войти',register:'Регистрация',loginField:'Логин',passField:'Пароль',nameField:'Имя',avatarField:'Аватар',enterLogin:'Введите логин...',enterPass:'Введите пароль...',enterName:'Ваше имя...',onlyLetters:'Только буквы и цифры...',min4:'Минимум 4 символа...',doLogin:'Войти',doReg:'Зарегистрироваться',or:'или',anonChat:'🕶 Анонимный чат',nickname:'Ваш никнейм',enterNick:'Придумайте имя...',enterAnon:'Войти анонимно',lastLogin:'Последний вход:',fillAll:'Заполните все поля',min2:'Минимум 2 символа',offline:'ОФЛАЙН',online:'ОНЛАЙН',anon:'АНОНИМ',msg:'Сообщение...',idOrLogin:'ID или логин...',status:'СТАТУС',onlineList:'Онлайн',friends:'Друзья',groups:'Группы',search:'Поиск',setStatus:'Статус',copyId:'Копировать ID',whatsNew:'Что нового?',myProfile:'Мой профиль',logout:'Выйти',blocked:'ЗАБЛОКИРОВАННЫЕ',createGrp:'СОЗДАТЬ ГРУППУ',grpName:'Имя группы...',pickFriends:'ВЫБЕРИ ДРУЗЕЙ',create:'Создать',searchUsers:'ПОИСК ПОЛЬЗОВАТЕЛЕЙ',nameOrLogin:'Имя или логин...',friendLogin:'Логин друга...',connect:'Подключиться',connected:'Подключено к',notOnline:'не в сети',typing:'печатает...',achUnlocked:'ДОСТИЖЕНИЕ',messages:'Сообщений',days:'Дней',friendsN:'Друзей',experience:'ОПЫТ',games:'Игры',regDate:'Регистрация',lastVisit:'Последний визит',write:'Написать',addFriend:'В друзья',close:'Закрыть',achievements:'ДОСТИЖЕНИЯ',aboutMe:'О себе...',checkers:'ШАШКИ',yourTurn:'Ваш ход',oppTurn:'Ход соперника',resign:'Сдаться',resignConfirm:'Сдаться?',ckInviteSent:'Приглашение в шашки отправлено',ckInviteMsg:'приглашает в шашки!',accept:'Принять',gameOver:'ИГРА ОКОНЧЕНА',oppResigned:'Соперник сдался!',youWin:'Вы победили!',youLose:'Вы проиграли',games2:'Игры',rps:'Камень-Ножницы-Бумага',rpsDesc:'Классическая игра на удачу',checkersName:'Шашки',checkersDesc:'Стратегическая настольная игра',pickOpponent:'ВЫБЕРИ СОПЕРНИКА',noFriendsOnline:'Нет друзей онлайн',durakName:'Дурак',durakDesc:'Классическая карточная игра',youAttack:'Вы атакуете',youDefend:'Вы защищаетесь',takCards:'Забрать',donAtk:'Бита',throwMore:'Подкинуть',deckLeft:'Колода',trumpSuit:'Козырь',dkInviteSent:'Приглашение в Дурака отправлено',dkInviteMsg:'приглашает в Дурака!',sound:'Звук',justNow:'только что',minAgo:'мин назад',hAgo:'ч назад',dAgo:'д назад',tttName:'Крестики-нолики',tttDesc:'Классика на 3×3',tttInviteSent:'Приглашение в крестики-нолики',tttInviteMsg:'приглашает в крестики-нолики!',yourMark:'Вы',oppMark:'Соперник',draw:'Ничья!',shop:'Магазин',coins:'монет',premiumAvatars:'ПРЕМИУМ АВАТАРЫ',titles:'ТИТУЛЫ',boosts:'БУСТЫ',buySuccess:'Куплено!',notEnough:'Недостаточно монет',leaderboard:'Рейтинг',lbXP:'По XP',lbMsg:'Сообщения',lbWins:'Победы',lbCoins:'Монеты',lbEmpty:'Пусто',channels:'Каналы',chCreate:'Создать',chJoin:'Подписаться',chLeave:'Отписаться',chOwner:'автор',chMembers:'подписч.',chOnlyOwner:'Только автор может писать',chPost:'Опубликовать',social:'ОБЩЕНИЕ',entertainment:'РАЗВЛЕЧЕНИЯ',settings:'НАСТРОЙКИ',logout:'Выйти',wheel:'Колесо фортуны',wheelSpin:'КРУТИТЬ',wheelCooldown:'Следующий спин через',wheelMin:'мин',wheelWon:'Выигрыш!',wheelLost:'Пусто!',wheelJackpot:'ДЖЕКПОТ!',weatherLoading:'Загрузка...',petFeed:'Кормить',petPlay:'Играть',petAdopt:'Заведи питомца!',petNamePrompt:'Назови питомца:',petTap:'Нажми сюда',petChoose:'Выбери своего компаньона',petAdoptBtn:'Завести!',petHunger:'Голод',petHappy:'Радость',petMood:'Настр.',petPet:'Гладить',petFree:'Бесплатно',petMoodGreat:'Супер!',petMoodGood:'Хорошо',petMoodOk:'Норм',petMoodSad:'Грустно',petMoodCritical:'Критично!',petWash:'Купать',petSleep:'Спать',petTrick:'Трюк',petMenu:'Питомец',petEvo:'Эволюция',petFoodMenu:'ЕДА',petRoom:'Комната',petShop2:'Магазин',petBack:'Назад',petBowl:'Миска',petToy:'Игрушка',petLamp:'Лампа',petPlant:'Растение',petRug:'Коврик',petBed:'Кровать',petAqua:'Аквариум',petHouse:'Домик'},
+  en:{login:'Login',register:'Register',loginField:'Login',passField:'Password',nameField:'Name',avatarField:'Avatar',enterLogin:'Enter login...',enterPass:'Enter password...',enterName:'Your name...',onlyLetters:'Letters and numbers...',min4:'Min 4 characters...',doLogin:'Sign In',doReg:'Register',or:'or',anonChat:'🕶 Anonymous chat',nickname:'Your nickname',enterNick:'Choose name...',enterAnon:'Enter anonymously',lastLogin:'Last login:',fillAll:'Fill all fields',min2:'Min 2 characters',offline:'OFFLINE',online:'ONLINE',anon:'ANON',msg:'Message...',idOrLogin:'ID or login...',status:'STATUS',onlineList:'Online',friends:'Friends',groups:'Groups',search:'Search',setStatus:'Status',copyId:'Copy ID',whatsNew:'What\'s new?',myProfile:'My Profile',logout:'Log out',blocked:'BLOCKED',createGrp:'CREATE GROUP',grpName:'Group name...',pickFriends:'PICK FRIENDS',create:'Create',searchUsers:'SEARCH USERS',nameOrLogin:'Name or login...',friendLogin:'Friend login...',connect:'Connect',connected:'Connected to',notOnline:'is offline',typing:'typing...',achUnlocked:'ACHIEVEMENT',messages:'Messages',days:'Days',friendsN:'Friends',experience:'XP',games:'Games',regDate:'Registered',lastVisit:'Last visit',write:'Message',addFriend:'Add friend',close:'Close',achievements:'ACHIEVEMENTS',aboutMe:'About me...',checkers:'CHECKERS',yourTurn:'Your turn',oppTurn:'Opponent\'s turn',resign:'Resign',resignConfirm:'Resign?',ckInviteSent:'Checkers invite sent',ckInviteMsg:'invites you to checkers!',accept:'Accept',gameOver:'GAME OVER',oppResigned:'Opponent resigned!',youWin:'You won!',youLose:'You lost',games2:'Games',rps:'Rock-Paper-Scissors',rpsDesc:'Classic luck game',checkersName:'Checkers',checkersDesc:'Strategy board game',pickOpponent:'PICK OPPONENT',noFriendsOnline:'No friends online',durakName:'Durak',durakDesc:'Classic Russian card game',youAttack:'You attack',youDefend:'You defend',takCards:'Take',donAtk:'Done',throwMore:'Throw',deckLeft:'Deck',trumpSuit:'Trump',dkInviteSent:'Durak invite sent',dkInviteMsg:'invites you to Durak!',sound:'Sound',justNow:'just now',minAgo:'min ago',hAgo:'h ago',dAgo:'d ago',tttName:'Tic-Tac-Toe',tttDesc:'Classic 3×3 game',tttInviteSent:'Tic-tac-toe invite sent',tttInviteMsg:'invites you to tic-tac-toe!',yourMark:'You',oppMark:'Opponent',draw:'Draw!',shop:'Shop',coins:'coins',premiumAvatars:'PREMIUM AVATARS',titles:'TITLES',boosts:'BOOSTS',buySuccess:'Purchased!',notEnough:'Not enough coins',leaderboard:'Leaderboard',lbXP:'By XP',lbMsg:'Messages',lbWins:'Wins',lbCoins:'Coins',lbEmpty:'Empty',channels:'Channels',chCreate:'Create',chJoin:'Subscribe',chLeave:'Unsubscribe',chOwner:'owner',chMembers:'subs',chOnlyOwner:'Only owner can post',chPost:'Publish',social:'SOCIAL',entertainment:'ENTERTAINMENT',settings:'SETTINGS',logout:'Logout',wheel:'Fortune Wheel',wheelSpin:'SPIN',wheelCooldown:'Next spin in',wheelMin:'min',wheelWon:'You won!',wheelLost:'Nothing!',wheelJackpot:'JACKPOT!',weatherLoading:'Loading...',petFeed:'Feed',petPlay:'Play',petAdopt:'Adopt a pet!',petNamePrompt:'Name your pet:',petTap:'Tap here',petChoose:'Choose your companion',petAdoptBtn:'Adopt!',petHunger:'Hunger',petHappy:'Happy',petMood:'Mood',petPet:'Pet',petFree:'Free',petMoodGreat:'Great!',petMoodGood:'Good',petMoodOk:'Okay',petMoodSad:'Sad',petMoodCritical:'Critical!',petWash:'Wash',petSleep:'Sleep',petTrick:'Trick',petMenu:'Pet',petEvo:'Evolution',petFoodMenu:'FOOD',petRoom:'Room',petShop2:'Shop',petBack:'Back',petBowl:'Bowl',petToy:'Toy',petLamp:'Lamp',petPlant:'Plant',petRug:'Rug',petBed:'Bed',petAqua:'Aquarium',petHouse:'House'},
+  az:{login:'Daxil ol',register:'Qeydiyyat',loginField:'Login',passField:'Şifrə',nameField:'Ad',avatarField:'Avatar',enterLogin:'Login daxil edin...',enterPass:'Şifrə daxil edin...',enterName:'Adınız...',onlyLetters:'Hərf və rəqəmlər...',min4:'Minimum 4 simvol...',doLogin:'Daxil ol',doReg:'Qeydiyyatdan keç',or:'və ya',anonChat:'🕶 Anonim çat',nickname:'Ləqəbiniz',enterNick:'Ad seçin...',enterAnon:'Anonim daxil ol',lastLogin:'Son giriş:',fillAll:'Bütün sahələri doldurun',min2:'Minimum 2 simvol',offline:'OFFLAYn',online:'ONLAYN',anon:'ANONİM',msg:'Mesaj...',idOrLogin:'ID və ya login...',status:'STATUS',onlineList:'Onlayn',friends:'Dostlar',groups:'Qruplar',search:'Axtar',setStatus:'Status',copyId:'ID kopyala',whatsNew:'Yeniliklər',myProfile:'Profilim',logout:'Çıxış',blocked:'BLOKLANMIŞ',createGrp:'QRUP YARAT',grpName:'Qrup adı...',pickFriends:'DOST SEÇ',create:'Yarat',searchUsers:'İSTİFADƏÇİ AXTAR',nameOrLogin:'Ad və ya login...',friendLogin:'Dost logini...',connect:'Qoşul',connected:'Qoşuldu:',notOnline:'onlayn deyil',typing:'yazır...',achUnlocked:'NAİLİYYƏT',messages:'Mesaj',days:'Gün',friendsN:'Dost',experience:'XP',games:'Oyun',regDate:'Qeydiyyat',lastVisit:'Son giriş',write:'Yaz',addFriend:'Dost əlavə et',close:'Bağla',achievements:'NAİLİYYƏTLƏR',aboutMe:'Haqqında...',checkers:'DAMA',yourTurn:'Sizin növbə',oppTurn:'Rəqibin növbəsi',resign:'Təslim ol',resignConfirm:'Təslim olursan?',ckInviteSent:'Dama dəvəti göndərildi',ckInviteMsg:'sizi damaya dəvət edir!',accept:'Qəbul et',gameOver:'OYUN BİTDİ',oppResigned:'Rəqib təslim oldu!',youWin:'Siz qazandınız!',youLose:'Siz uduzudunuz',games2:'Oyunlar',rps:'Daş-Kağız-Qayçı',rpsDesc:'Klassik şans oyunu',checkersName:'Dama',checkersDesc:'Strateji masa oyunu',pickOpponent:'RƏQİB SEÇ',noFriendsOnline:'Onlayn dost yoxdur',durakName:'Durak',durakDesc:'Klassik kart oyunu',youAttack:'Siz hücum edirsiniz',youDefend:'Siz müdafiə edirsiniz',takCards:'Götür',donAtk:'Bitdi',throwMore:'At',deckLeft:'Dəstə',trumpSuit:'Kozır',dkInviteSent:'Durak dəvəti göndərildi',dkInviteMsg:'sizi Duraka dəvət edir!',sound:'Səs',justNow:'indicə',minAgo:'dəq əvvəl',hAgo:'saat əvvəl',dAgo:'gün əvvəl',tttName:'X və O',tttDesc:'Klassik 3×3 oyun',tttInviteSent:'X və O dəvəti göndərildi',tttInviteMsg:'sizi X və O oyununa dəvət edir!',yourMark:'Siz',oppMark:'Rəqib',draw:'Heç-heçə!',shop:'Mağaza',coins:'sikkə',premiumAvatars:'PREMİUM AVATARLAR',titles:'TİTULLAR',boosts:'BUSTLAR',buySuccess:'Alındı!',notEnough:'Kifayət qədər sikkə yoxdur',leaderboard:'Reytinq',lbXP:'XP üzrə',lbMsg:'Mesajlar',lbWins:'Qələbələr',lbCoins:'Sikkələr',lbEmpty:'Boşdur',channels:'Kanallar',chCreate:'Yarat',chJoin:'Abunə ol',chLeave:'Abunəni ləğv et',chOwner:'müəllif',chMembers:'abunəçi',chOnlyOwner:'Yalnız müəllif yaza bilər',chPost:'Dərc et',social:'ÜNSIYYƏT',entertainment:'ƏYLƏNCƏ',settings:'TƏNZIMLƏMƏLƏR',logout:'Çıxış',wheel:'Şans çarxı',wheelSpin:'FIRLA',wheelCooldown:'Növbəti fırlanma',wheelMin:'dəq',wheelWon:'Qazandın!',wheelLost:'Boş!',wheelJackpot:'CEKPOT!',weatherLoading:'Yüklənir...',petFeed:'Yedirt',petPlay:'Oyna',petAdopt:'Heyvan saxla!',petNamePrompt:'Heyvanın adı:',petTap:'Bura bas',petChoose:'Yoldaşını seç',petAdoptBtn:'Saxla!',petHunger:'Aclıq',petHappy:'Xoşbəxt',petMood:'Əhval',petPet:'Sığal',petFree:'Pulsuz',petMoodGreat:'Əla!',petMoodGood:'Yaxşı',petMoodOk:'Normal',petMoodSad:'Kədərli',petMoodCritical:'Kritik!',petWash:'Yu',petSleep:'Yat',petTrick:'Hünər',petMenu:'Heyvan',petEvo:'Təkamül',petFoodMenu:'YEMƏK',petRoom:'Otaq',petShop2:'Mağaza',petBack:'Geri',petBowl:'Qab',petToy:'Oyuncaq',petLamp:'Lampa',petPlant:'Bitki',petRug:'Xalça',petBed:'Yataq',petAqua:'Akvarium',petHouse:'Ev'}
 };
 const ACHS=[
   {id:'first_msg',icon:'💬',name:{ru:'Первое слово',en:'First Word',az:'İlk söz'}},
@@ -691,7 +713,7 @@ function showProfile(id){
     h+='<div class="prof-stat"><div class="val">🪙 '+(p.coins||0)+'</div><div class="lbl">'+t('coins')+'</div></div>';
     h+='</div>';
     if(isMe)h+='<div class="prof-weather" id="profWeather"><div class="pw-icon">ð¤</div><div><div class="pw-temp" id="pwTemp">--Â°</div><div class="pw-desc" id="pwDesc">'+(t('weatherLoading')||'...')+'</div></div></div>';
-    if(isMe){if(p.petType){const petLvl=Math.floor((p.petXp||0)/50)+1;const petMood=(p.petHunger+p.petHappy)/2;const moodEmoji=petMood>70?'😊':petMood>40?'😐':'😢';h+='<div class="pet-box" onclick="openPetScreen(\''+p.petType+'\',\''+escH(p.petName)+'\','+p.petHunger+','+p.petHappy+','+(p.petXp||0)+')"><div class="pet-mini"><span class="pet-mini-sprite">'+p.petType+'</span><div class="pet-mini-info"><div class="pet-mini-name">'+escH(p.petName)+' '+moodEmoji+'</div><div class="pet-mini-lvl">LVL '+petLvl+' • 🍖'+p.petHunger+'% 💖'+p.petHappy+'%</div></div></div></div>'}else{h+='<div class="pet-box" onclick="openPetAdopt()"><div class="pet-mini"><span class="pet-mini-sprite">🥚</span><div class="pet-mini-info"><div class="pet-mini-name">'+(t('petAdopt')||'Adopt a pet!')+'</div><div class="pet-mini-lvl">👉 '+(t('petTap')||'Tap here')+'</div></div></div></div>'}}
+    if(isMe){if(p.petType){const petLvl=Math.floor((p.petXp||0)/50)+1;const petMood=(p.petHunger+p.petHappy)/2;const moodEmoji=petMood>70?'😊':petMood>40?'😐':'😢';window._profPet={type:p.petType,name:p.petName,hunger:p.petHunger,happy:p.petHappy,xp:p.petXp||0,room:JSON.parse(p.petRoom||'[]')};h+='<div class="pet-box" onclick="openPetScreen(window._profPet.type,window._profPet.name,window._profPet.hunger,window._profPet.happy,window._profPet.xp,window._profPet.room)"><div class="pet-mini"><span class="pet-mini-sprite">'+p.petType+'</span><div class="pet-mini-info"><div class="pet-mini-name">'+escH(p.petName)+' '+moodEmoji+'</div><div class="pet-mini-lvl">LVL '+petLvl+' • 🍖'+p.petHunger+'% 💖'+p.petHappy+'%</div></div></div></div>'}else{h+='<div class="pet-box" onclick="openPetAdopt()"><div class="pet-mini"><span class="pet-mini-sprite">🥚</span><div class="pet-mini-info"><div class="pet-mini-name">'+(t('petAdopt')||'Adopt a pet!')+'</div><div class="pet-mini-lvl">👉 '+(t('petTap')||'Tap here')+'</div></div></div></div>'}}
     h+='<div class="prof-xp"><div style="font-size:.65rem;color:var(--td);font-family:\'Space Mono\',monospace">'+t('experience')+'</div><div class="prof-xp-bar"><div class="prof-xp-fill" style="width:'+xpPct+'%"></div></div><div class="prof-xp-text"><span>'+p.xp+' XP</span><span>'+xpNext+' XP</span></div></div>';
     h+='<div class="prof-details">';
     h+='<div class="prof-row"><span class="lbl">🎲 '+t('games')+'</span><span class="val">'+p.gamesWon+'/'+p.gamesPlayed+(p.gamesPlayed>0?' ('+winRate+'%)':'')+'</span></div>';
@@ -731,8 +753,8 @@ function petAdopt(emoji){
 function petFeed(){if(!ws)return;ws.send(JSON.stringify({type:'pet_feed'}))}
 function petPlay(){if(!ws)return;ws.send(JSON.stringify({type:'pet_play'}))}
 let petState={};
-function openPetScreen(type,name,hunger,happy,xp){
-  petState={type,name,hunger,happy,xp};
+function openPetScreen(type,name,hunger,happy,xp,room){
+  petState={type,name,hunger,happy,xp,room:room||[]};
   renderPetScreen();
   document.getElementById('petBg').classList.add('show');
 }
@@ -773,46 +795,74 @@ function renderPetScreen(){
   const moodEmoji=mood>80?'😊':mood>60?'🙂':mood>40?'😐':mood>20?'😢':'💀';
   const moodText=mood>80?(t('petMoodGreat')||'Great!'):mood>60?(t('petMoodGood')||'Good'):mood>40?(t('petMoodOk')||'Okay'):mood>20?(t('petMoodSad')||'Sad'):(t('petMoodCritical')||'Critical!');
   const isSleeping=p.happy<15;
+  // EVOLUTION: different emoji per level
+  const evoMap={'🐱':['🐱','😺','😸','😻','🦁'],'🐶':['🐶','🐕','🦮','🐺','🐲'],'🐰':['🐰','🐇','🐾','🦄','🐲'],'🐹':['🐹','🐭','🐀','🦔','🐲'],'🦊':['🦊','🐺','🦝','🐯','🐲'],'🐸':['🐸','🐊','🦎','🐉','🐲'],'🐧':['🐧','🐦','🦅','🦚','🐲'],'🐻':['🐻','🐼','🦊','🐯','🐲']};
+  const evoStage=Math.min(4,Math.floor(lvl/3));
+  const evos=evoMap[p.type]||[p.type,p.type,p.type,p.type,p.type];
+  const displayPet=evos[evoStage];
   const acc=lvl>=10?'👑':lvl>=7?'🎩':lvl>=5?'🎀':lvl>=3?'⭐':'';
-  let h='<div class="pet-scene">';
+  // DAY/NIGHT by real time
+  const hr=new Date().getHours();
+  const timeOfDay=hr>=6&&hr<10?'morning':hr>=10&&hr<17?'day':hr>=17&&hr<20?'sunset':'night';
+  let h='<div class="pet-scene '+timeOfDay+'">';
   h+='<div class="pet-scene-stars" id="petStars"></div>';
+  if(timeOfDay==='night')h+='<div class="pet-moon"></div>';
+  else if(timeOfDay==='day')h+='<div class="pet-sun day"></div>';
+  else if(timeOfDay==='sunset')h+='<div class="pet-sun sunset"></div>';
+  else h+='<div class="pet-sun morning"></div>';
   h+='<div class="pet-scene-ground"></div>';
   h+='<div class="pet-scene-grass"></div>';
+  // ROOM FURNITURE
+  const room=p.room||[];
+  const furniturePos={bed:'bottom:8%;left:8%',plant:'bottom:12%;right:8%',lamp:'bottom:10%;right:22%',rug:'bottom:2%;left:30%',toy:'bottom:6%;left:22%',bowl:'bottom:4%;right:32%',house:'bottom:8%;left:42%',aqua:'bottom:10%;right:42%'};
+  const furnitureIcons={bed:'🛏',plant:'🌿',lamp:'💡',rug:'🟫',toy:'🧸',bowl:'🥣',house:'🏠',aqua:'🐟'};
+  if(room.length>0){h+='<div class="pet-room-items">';room.forEach(function(it){h+='<div class="pet-furniture" style="'+furniturePos[it]+'">'+furnitureIcons[it]+'</div>'});h+='</div>'}
   h+='<div class="pet-glow"></div>';
   h+='<div class="pet-platform"></div>';
   h+='<div class="pet-particles" id="petParticles"></div>';
   h+='<div class="pet-character'+(isSleeping?' sleeping':'')+'" id="petSprite" onclick="petTap()">';
   h+='<div class="pet-body">';
   if(acc)h+='<div class="pet-accessory">'+acc+'</div>';
-  h+='<div class="pet-head">'+p.type+'</div>';
+  h+='<div class="pet-head">'+displayPet+'</div>';
   h+='<div class="pet-belly"><div class="pet-paws"><div class="pet-paw"></div><div class="pet-paw"></div></div></div>';
   h+='<div class="pet-feet"><div class="pet-foot"></div><div class="pet-foot"></div></div>';
   h+='</div>';
   h+='<div class="pet-shadow"></div>';
   h+='</div>';
   if(isSleeping)h+='<div class="pet-zzz">💤</div>';
+  h+='<div id="petSpeech"></div>';
   h+='<div class="pet-hearts" id="petHearts"></div>';
   h+='</div>';
   h+='<div class="pet-info">';
   h+='<div class="pet-name-row"><span class="pet-name-big">'+p.name+'</span><span class="pet-mood-icon">'+moodEmoji+'</span></div>';
+  if(evoStage>0)h+='<div style="text-align:center;font-size:.55rem;color:#a78bfa;font-family:\'Space Mono\',monospace;margin-bottom:2px">'+(t('petEvo')||'Evolution')+' '+['I','II','III','IV','V'][evoStage]+'</div>';
   h+='<div class="pet-lvl-row"><span class="pet-lvl-badge">LVL '+lvl+'</span><div class="pet-lvl-xp">XP: '+xpInLvl+'/50</div></div>';
   h+='<div class="pet-stats">';
   h+='<div class="pet-stat-row"><span class="pet-stat-icon">🍖</span><span class="pet-stat-lbl">'+(t('petHunger')||'Hunger')+'</span><div class="pet-stat-track"><div class="pet-stat-fill hunger" style="width:'+p.hunger+'%"></div></div><span class="pet-stat-val" style="color:'+(p.hunger<30?'#ef4444':p.hunger<60?'#f59e0b':'#22c55e')+'">'+p.hunger+'%</span></div>';
   h+='<div class="pet-stat-row"><span class="pet-stat-icon">💖</span><span class="pet-stat-lbl">'+(t('petHappy')||'Happy')+'</span><div class="pet-stat-track"><div class="pet-stat-fill happy" style="width:'+p.happy+'%"></div></div><span class="pet-stat-val" style="color:'+(p.happy<30?'#ef4444':p.happy<60?'#a78bfa':'#f472b6')+'">'+p.happy+'%</span></div>';
   h+='<div class="pet-stat-row"><span class="pet-stat-icon">💪</span><span class="pet-stat-lbl">'+(t('petMood')||'Mood')+'</span><div class="pet-stat-track"><div class="pet-stat-fill" style="width:'+mood+'%;background:linear-gradient(90deg,#ef4444,#f59e0b,#22c55e)"></div></div><span class="pet-stat-val">'+moodText+'</span></div>';
   h+='</div>';
+  // FOOD MENU
+  h+='<div style="font-size:.6rem;color:var(--td);text-transform:uppercase;letter-spacing:1.5px;font-family:\'Space Mono\',monospace;margin-bottom:6px">'+(t('petFoodMenu')||'FOOD')+'</div>';
+  h+='<div class="pet-food-menu">';
+  const foods=[{id:'milk',icon:'🥛',cost:2},{id:'apple',icon:'🍎',cost:3},{id:'candy',icon:'🍬',cost:4},{id:'fish',icon:'🐟',cost:5},{id:'pizza',icon:'🍕',cost:6},{id:'meat',icon:'🥩',cost:8},{id:'cake',icon:'🎂',cost:10},{id:'golden',icon:'🌟',cost:25}];
+  foods.forEach(function(f){h+='<div class="pet-food-item'+(myCoins<f.cost?' disabled':'')+'" onclick="feedPetFood(\''+f.id+'\')"><span class="pf-icon">'+f.icon+'</span><span class="pf-cost">'+f.cost+'🪙</span></div>'});
+  h+='</div>';
+  // ACTION BUTTONS
   h+='<div class="pet-btns">';
-  h+='<div class="pet-action'+(myCoins<5?' disabled':'')+'" onclick="doPetFeed()"><span class="pa-icon">🍖</span><span class="pa-name">'+(t('petFeed')||'Feed')+'</span><span class="pa-cost">5🪙</span></div>';
   h+='<div class="pet-action'+(myCoins<3?' disabled':'')+'" onclick="doPetPlay()"><span class="pa-icon">🎾</span><span class="pa-name">'+(t('petPlay')||'Play')+'</span><span class="pa-cost">3🪙</span></div>';
   h+='<div class="pet-action'+(myCoins<4?' disabled':'')+'" onclick="doPetWash()"><span class="pa-icon">🛁</span><span class="pa-name">'+(t('petWash')||'Wash')+'</span><span class="pa-cost">4🪙</span></div>';
   h+='<div class="pet-action" onclick="petTap()"><span class="pa-icon">🤗</span><span class="pa-name">'+(t('petPet')||'Pet')+'</span><span class="pa-cost">'+(t('petFree')||'Free')+'</span></div>';
   h+='<div class="pet-action" onclick="doPetSleep()"><span class="pa-icon">😴</span><span class="pa-name">'+(t('petSleep')||'Sleep')+'</span><span class="pa-cost">'+(t('petFree')||'Free')+'</span></div>';
   h+='<div class="pet-action" onclick="doPetTrick()"><span class="pa-icon">🎪</span><span class="pa-name">'+(t('petTrick')||'Trick')+'</span><span class="pa-cost">'+(t('petFree')||'Free')+'</span></div>';
+  h+='<div class="pet-action" onclick="openPetRoom()"><span class="pa-icon">🏠</span><span class="pa-name">'+(t('petRoom')||'Room')+'</span><span class="pa-cost">'+(t('petShop2')||'Shop')+'</span></div>';
   h+='</div>';
   h+='<div style="text-align:center"><button class="mini-btn" onclick="document.getElementById(\'petBg\').classList.remove(\'show\')">'+t('close')+'</button></div>';
   h+='</div>';
   md.innerHTML=h;
   drawPetStars();
+  // Speech bubble with delay
+  setTimeout(function(){petSay()},800);
 }
 function drawPetStars(){
   const c=document.getElementById('petStars');if(!c)return;
@@ -832,7 +882,8 @@ function drawPetStars(){
 function petTap(){
   const sp=document.getElementById('petSprite');if(!sp)return;
   sp.style.animation='none';sp.offsetHeight;sp.style.animation='pet-eat .5s ease 1';
-  showPetHearts();
+  showPetHearts();petEmote('💕');petSound('tap');
+  petSay();
 }
 function showPetHearts(){
   const c=document.getElementById('petHearts');if(!c)return;
@@ -851,19 +902,19 @@ function doPetFeed(){
   if(!ws||myCoins<5)return;
   const sp=document.getElementById('petSprite');
   if(sp){sp.classList.add('eating');setTimeout(()=>sp.classList.remove('eating'),2000)}
-  showPetHearts();
+  showPetHearts();petEmote('😋');petSound('feed');petSay('Вкусняшка!');
   ws.send(JSON.stringify({type:'pet_feed'}));
 }
 function doPetPlay(){
   if(!ws||myCoins<3)return;
   const sp=document.getElementById('petSprite');
   if(sp){sp.classList.add('playing');setTimeout(()=>sp.classList.remove('playing'),2200)}
-  showPetHearts();
+  showPetHearts();petEmote('🥳');petSound('play');petSay('Вииии! 🎉');
   ws.send(JSON.stringify({type:'pet_play'}));
 }
 function openPetFromMenu(){
   fetch(API+'/profile?id='+encodeURIComponent(myId)).then(r=>r.json()).then(p=>{
-    if(p.petType)openPetScreen(p.petType,p.petName||'Pet',p.petHunger||50,p.petHappy||50,p.petXp||0);
+    if(p.petType){let rm=[];try{rm=JSON.parse(p.petRoom||'[]')}catch(e){}openPetScreen(p.petType,p.petName||'Pet',p.petHunger||50,p.petHappy||50,p.petXp||0,rm)}
     else openPetAdopt();
   }).catch(()=>openPetAdopt());
 }
@@ -871,7 +922,7 @@ function doPetWash(){
   if(!ws||myCoins<4)return;
   const sp=document.getElementById('petSprite');
   if(sp){sp.style.animation='none';sp.offsetHeight;sp.style.animation='pet-eat .6s ease 2'}
-  showPetBubbles();
+  showPetBubbles();petEmote('🧼');petSound('wash');petSay('Буль-буль! 🫧');
   ws.send(JSON.stringify({type:'pet_wash'}));
 }
 function doPetSleep(){
@@ -890,7 +941,7 @@ function doPetTrick(){
   const sp=document.getElementById('petSprite');if(!sp)return;
   sp.style.animation='none';sp.offsetHeight;
   sp.style.animation='pet-trick .8s ease 2';
-  showPetHearts();
+  showPetHearts();petEmote('🤩');petSound('trick');
 }
 function showPetBubbles(){
   const c=document.getElementById('petHearts');if(!c)return;
@@ -903,6 +954,96 @@ function showPetBubbles(){
       c.appendChild(h);setTimeout(()=>h.remove(),1200);
     },i*120);
   }
+}
+// SPEECH BUBBLE
+const PET_PHRASES={
+  happy:['Я тебя люблю! ❤️','Мне хорошо!','Обнимашки? 🤗','Лучший день!','Ты мой друг! 💕'],
+  hungry:['Хочу кушать... 🍖','Мой животик урчит','Еды! Еды!','Голодный...😿'],
+  sad:['Мне грустно...','Поиграй со мной 😢','Скучаю по тебе','Не забывай меня!'],
+  neutral:['Привет! 👋','Как дела?','Хм-м...','Чем займёмся?','Ля-ля-ля 🎵'],
+  sleeping:['Zzz...💤','Хр-р-р...','Сплю...не буди']
+};
+function petSay(forced){
+  const sb=document.getElementById('petSpeech');if(!sb)return;
+  const p=petState;const mood=(p.hunger+p.happy)/2;
+  let pool2;
+  if(p.happy<15)pool2=PET_PHRASES.sleeping;
+  else if(forced)pool2=[forced];
+  else if(p.hunger<30)pool2=PET_PHRASES.hungry;
+  else if(mood<40)pool2=PET_PHRASES.sad;
+  else if(mood>70)pool2=PET_PHRASES.happy;
+  else pool2=PET_PHRASES.neutral;
+  const txt=pool2[Math.floor(Math.random()*pool2.length)];
+  sb.innerHTML='<div class="pet-speech">'+txt+'</div>';
+  setTimeout(function(){sb.innerHTML=''},3500);
+}
+// EMOTIONS
+function petEmote(emoji){
+  const sc=document.querySelector('.pet-scene');if(!sc)return;
+  const em=document.createElement('div');em.className='pet-emotion';em.textContent=emoji;
+  sc.appendChild(em);setTimeout(function(){em.remove()},1000);
+}
+// SOUND EFFECTS
+function petSound(action){
+  if(!soundOn)return;
+  try{
+    const ac=new(window.AudioContext||window.webkitAudioContext)();
+    const osc=ac.createOscillator();const gain=ac.createGain();
+    osc.connect(gain);gain.connect(ac.destination);
+    gain.gain.value=0.08;
+    if(action==='feed'){osc.frequency.value=523;osc.type='sine';osc.start();osc.frequency.linearRampToValueAtTime(784,ac.currentTime+.15);gain.gain.linearRampToValueAtTime(0,ac.currentTime+.3);osc.stop(ac.currentTime+.3)}
+    else if(action==='play'){osc.frequency.value=392;osc.type='triangle';osc.start();osc.frequency.linearRampToValueAtTime(523,ac.currentTime+.1);osc.frequency.linearRampToValueAtTime(659,ac.currentTime+.2);gain.gain.linearRampToValueAtTime(0,ac.currentTime+.35);osc.stop(ac.currentTime+.35)}
+    else if(action==='wash'){osc.frequency.value=800;osc.type='sine';gain.gain.value=0.04;osc.start();osc.frequency.linearRampToValueAtTime(1200,ac.currentTime+.1);osc.frequency.linearRampToValueAtTime(600,ac.currentTime+.25);gain.gain.linearRampToValueAtTime(0,ac.currentTime+.4);osc.stop(ac.currentTime+.4)}
+    else if(action==='trick'){osc.frequency.value=262;osc.type='square';gain.gain.value=0.05;osc.start();osc.frequency.linearRampToValueAtTime(523,ac.currentTime+.1);osc.frequency.linearRampToValueAtTime(784,ac.currentTime+.2);osc.frequency.linearRampToValueAtTime(1047,ac.currentTime+.3);gain.gain.linearRampToValueAtTime(0,ac.currentTime+.4);osc.stop(ac.currentTime+.4)}
+    else if(action==='tap'){osc.frequency.value=600;osc.type='sine';gain.gain.value=0.06;osc.start();gain.gain.linearRampToValueAtTime(0,ac.currentTime+.15);osc.stop(ac.currentTime+.15)}
+    else{osc.frequency.value=440;osc.type='sine';osc.start();gain.gain.linearRampToValueAtTime(0,ac.currentTime+.2);osc.stop(ac.currentTime+.2)}
+  }catch(e){}
+}
+// FOOD SYSTEM
+function feedPetFood(foodId){
+  if(!ws)return;
+  const sp=document.getElementById('petSprite');
+  if(sp){sp.classList.add('eating');setTimeout(function(){sp.classList.remove('eating')},1800)}
+  const foodEmojis={milk:'🥛',apple:'🍎',candy:'🍬',fish:'🐟',pizza:'🍕',meat:'🥩',cake:'🎂',golden:'🌟'};
+  petEmote(foodEmojis[foodId]||'🍖');
+  petSay('Ням-ням! '+( foodEmojis[foodId]||''));
+  petSound('feed');showPetHearts();
+  ws.send(JSON.stringify({type:'pet_feed_food',food:foodId}));
+}
+// ROOM SHOP
+function openPetRoom(){
+  const md=document.getElementById('petModal');
+  const room=petState.room||[];
+  const items=[
+    {id:'bowl',icon:'🥣',cost:5,name:t('petBowl')||'Bowl'},
+    {id:'toy',icon:'🧸',cost:10,name:t('petToy')||'Toy'},
+    {id:'lamp',icon:'💡',cost:8,name:t('petLamp')||'Lamp'},
+    {id:'plant',icon:'🌿',cost:10,name:t('petPlant')||'Plant'},
+    {id:'rug',icon:'🟫',cost:12,name:t('petRug')||'Rug'},
+    {id:'bed',icon:'🛏',cost:15,name:t('petBed')||'Bed'},
+    {id:'aqua',icon:'🐟',cost:18,name:t('petAqua')||'Aquarium'},
+    {id:'house',icon:'🏠',cost:20,name:t('petHouse')||'House'}
+  ];
+  let h='<div style="padding:18px;text-align:center">';
+  h+='<div style="font-size:1rem;font-weight:700;color:var(--a);margin-bottom:4px">🏠 '+(t('petRoom')||'Room')+'</div>';
+  h+='<div style="font-size:.68rem;color:var(--td);margin-bottom:12px">🪙 '+myCoins+' '+(t('coins')||'coins')+'</div>';
+  h+='<div class="pet-food-menu" style="grid-template-columns:repeat(4,1fr);gap:8px">';
+  items.forEach(function(it){
+    const owned=room.includes(it.id);
+    h+='<div class="pet-food-item'+(owned?' disabled':myCoins<it.cost?' disabled':'')+'" onclick="buyPetRoom(\''+it.id+'\')" style="padding:10px 4px">';
+    h+='<span class="pf-icon" style="font-size:1.5rem">'+it.icon+'</span>';
+    h+='<span style="font-size:.6rem;font-weight:600">'+it.name+'</span>';
+    h+='<span class="pf-cost">'+(owned?'✅':it.cost+'🪙')+'</span>';
+    h+='</div>';
+  });
+  h+='</div>';
+  h+='<div style="margin-top:12px"><button class="mini-btn" onclick="renderPetScreen()">← '+(t('petBack')||'Back')+'</button></div>';
+  h+='</div>';
+  md.innerHTML=h;
+}
+function buyPetRoom(itemId){
+  if(!ws)return;
+  ws.send(JSON.stringify({type:'pet_buy_room',item:itemId}));
 }
 function escH(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 function saveBio(){const el=document.getElementById('bioEdit');if(!el||!ws)return;ws.send(JSON.stringify({type:'update_bio',bio:el.value}))}
@@ -1266,6 +1407,7 @@ case'wheel_cooldown':{
   wheelSpinning=false;break;
 }
 case'pet_update':if(m.coins!==undefined){myCoins=m.coins;const mc4=document.getElementById('menuCoins');if(mc4)mc4.textContent='🪙 '+myCoins+' '+t('coins')}if(m.hunger!==undefined){petState.hunger=m.hunger;petState.happy=m.happy;petState.xp=m.xp;if(document.getElementById('petBg').classList.contains('show'))renderPetScreen()}break;
+case'pet_room_update':if(m.coins!==undefined){myCoins=m.coins;const mc5=document.getElementById('menuCoins');if(mc5)mc5.textContent='🪙 '+myCoins+' '+t('coins')}petState.room=m.room||[];openPetRoom();break;
 case'checkers_invite':ensureChat(m.from,m.displayName);addToChat(m.from,{type:'y',text:'♟ '+m.displayName+' '+(t('ckInviteMsg')||'приглашает в шашки!')+'<br><button class="mini-btn" onclick="ckAccept(\''+m.from+'\')">✅ '+(t('accept')||'Принять')+'</button>'});sR2();break;
 case'checkers_start':ckStartGame(m);break;
 case'checkers_update':if(ckGame&&ckGame.id===m.gameId){ckGame.board=m.board;ckGame.turn=m.turn;ckGame.lastMove=m.lastMove;if(m.mustContinue){ckMust=m.continueFrom;ckSel=m.continueFrom}else{ckMust=null;ckSel=null}ckRender()}break;
