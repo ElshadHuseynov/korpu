@@ -42,9 +42,9 @@
     .game-card .g-icon{font-size:1.6rem;width:36px;text-align:center;flex-shrink:0}
     .game-card .g-info{flex:1}.game-card .g-name{font-weight:600;font-size:.85rem}.game-card .g-desc{font-size:.65rem;color:var(--td);margin-top:1px}
     .game-pick-title{font-size:.65rem;text-transform:uppercase;letter-spacing:2px;color:var(--td);font-family:'Space Mono',monospace;margin:8px 0 6px}
-    .game-friend-row{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:8px;cursor:pointer;transition:background .15s;font-size:.82rem}
-    .game-friend-row:hover{background:rgba(255,255,255,.06)}
-    .game-friend-row .av{font-size:1rem}.game-friend-row .nm{flex:1;font-weight:500}
+    .game-friend-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;cursor:pointer;transition:all .2s;font-size:.88rem}
+    .game-friend-row:hover{background:rgba(255,255,255,.06);transform:translateX(2px)}
+    .game-friend-row .av{font-size:1.3rem}.game-friend-row .nm{flex:1;font-weight:500}
     .conn-row{display:flex;gap:5px;margin-bottom:4px}.conn-row input{flex:1;padding:8px 12px;background:var(--glass);border:1px solid var(--gb);border-radius:10px;color:var(--t);font-size:.82rem;outline:none;font-family:'Outfit',sans-serif}.conn-row input:focus{border-color:rgba(0,229,160,.4)}.conn-row input::placeholder{color:var(--td)}
     .conn-btn{width:38px;height:38px;border-radius:12px;border:1px solid rgba(0,229,160,.15);background:rgba(0,229,160,.08);color:var(--a);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .25s;font-weight:700}.conn-btn:hover{background:rgba(0,229,160,.15);box-shadow:0 2px 10px var(--ag)}.conn-btn:active{transform:scale(.92)}
     .ach-toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);padding:10px 18px;background:linear-gradient(135deg,rgba(167,139,250,.2),rgba(0,229,160,.15));border:1px solid rgba(167,139,250,.3);border-radius:14px;z-index:200;text-align:center;transition:transform .4s ease;pointer-events:none;backdrop-filter:blur(10px)}
@@ -1318,12 +1318,16 @@ function renderGamesList(){
 function selectGame(game){
   selectedGame=game;
   const gc=document.getElementById('gamesContent');
-  const onlineFriends=friendsList.filter(f=>f.online);
-  let h='<div class="game-card" style="pointer-events:none;opacity:.7"><div class="g-icon">'+(game==='rps'?'🎲':'♟')+'</div><div class="g-info"><div class="g-name">'+(game==='rps'?t('rps'):t('checkersName'))+'</div><div class="g-desc">'+(game==='rps'?t('rpsDesc'):t('checkersDesc'))+'</div></div></div>';
+  // Cross-reference with actual online users
+  const onlineIds=new Set((window._onlineUsers||[]).map(u=>u.id));
+  const onlineFriends=friendsList.filter(f=>f.online||onlineIds.has(f.id));
+  const gameNames={rps:t('rps'),ttt:t('tttName'),checkers:t('checkersName'),durak:t('durakName')};
+  const gameIcons={rps:'🎲',ttt:'❌',checkers:'♟',durak:'🃏'};
+  let h='<div class="game-card" style="pointer-events:none;opacity:.7"><div class="g-icon">'+gameIcons[game]+'</div><div class="g-info"><div class="g-name">'+(gameNames[game]||game)+'</div></div></div>';
   h+='<div class="game-pick-title">'+t('pickOpponent')+'</div>';
-  if(onlineFriends.length===0){h+='<div style="text-align:center;color:var(--td);font-size:.75rem;padding:12px">'+t('noFriendsOnline')+'</div>'}
-  else{onlineFriends.forEach(f=>{h+='<div class="game-friend-row" onclick="startGameWith(\''+f.id+'\')"><span class="av">'+(f.avatar||'🐱')+'</span><span class="nm">'+f.displayName+'</span><div class="dot on" style="width:6px;height:6px;border-radius:50%;background:var(--a)"></div></div>'})}
-  h+='<div style="text-align:center;margin-top:8px"><button class="mini-btn" onclick="selectedGame=null;renderGamesList()">← '+(t('close')||'Назад')+'</button></div>';
+  if(onlineFriends.length===0){h+='<div style="text-align:center;color:var(--td);font-size:.8rem;padding:16px">'+t('noFriendsOnline')+'</div>'}
+  else{onlineFriends.forEach(f=>{h+='<div class="game-friend-row" onclick="startGameWith(\''+f.id+'\')"><span class="av">'+(f.avatar||'🐱')+'</span><span class="nm">'+f.displayName+'</span><div class="dot on" style="width:8px;height:8px;border-radius:50%;background:var(--a);box-shadow:0 0 6px var(--ag)"></div></div>'})}
+  h+='<div style="text-align:center;margin-top:10px"><button class="mini-btn" onclick="selectedGame=null;renderGamesList()">← '+(t('close')||'Назад')+'</button></div>';
   gc.innerHTML=h;
 }
 function startGameWith(id){
@@ -1462,14 +1466,23 @@ function dkAction(action){
 function dkResign(){if(!dkGame||!ws)return;if(!confirm(t('resignConfirm')||'Сдаться?'))return;ws.send(JSON.stringify({type:'durak_resign',gameId:dkGame.gameId}))}
 let sto;function doSearch(){clearTimeout(sto);sto=setTimeout(()=>{const q=document.getElementById('searchI').value.trim();if(q.length<2){document.getElementById('searchR').innerHTML='';return}fetch(API+'/search?q='+encodeURIComponent(q)).then(r=>r.json()).then(d=>{const el=document.getElementById('searchR');el.innerHTML='';(d.users||[]).forEach(u=>{const isFr=friendsList.some(f=>f.id===u.id);const div=document.createElement('div');div.className='p-row';div.innerHTML='<span class="av">'+u.avatar+'</span><span class="name">'+u.displayName+' <span class="lvl-badge">LV'+u.level+'</span> '+(isFr?'<span class="friend-badge">друг</span>':'')+'</span><div class="p-row-actions"><button class="mini-btn" onclick="event.stopPropagation();document.getElementById(\'pId\').value=\''+u.id+'\';doConn();toggleP(\'sP\')">💬</button>'+(isFr?'':'<button class="mini-btn" onclick="event.stopPropagation();addFD(\''+u.id+'\')">➕</button>')+'<button class="mini-btn danger" onclick="event.stopPropagation();blockU(\''+u.id+'\')">🚫</button></div><div class="dot '+(u.online?'on':'off')+'"></div>';el.appendChild(div)})}).catch(()=>{})},300)}
 function timeAgo(d){if(!d)return'';const ms=Date.now()-new Date(d).getTime();const m=Math.floor(ms/60000);if(m<1)return t('justNow')||'только что';if(m<60)return m+' '+(t('minAgo')||'мин назад');const h=Math.floor(m/60);if(h<24)return h+' '+(t('hAgo')||'ч назад');const dy=Math.floor(h/24);return dy+' '+(t('dAgo')||'д назад')}
-function renderFriends(){const el=document.getElementById('fL2');el.innerHTML='';friendsList.forEach(f=>{const d=document.createElement('div');d.className='p-row';const lastSeen=f.online?'':(f.lastLogin?timeAgo(f.lastLogin):'');d.innerHTML='<span class="av">'+f.avatar+'</span><span class="name">'+f.displayName+' <span class="lvl-badge">LV'+f.level+'</span></span><span class="st">'+(f.online?(f.status?'• '+f.status:''):('<span style="font-size:.6rem;color:var(--td)">'+lastSeen+'</span>'))+'</span><div class="p-row-actions"><button class="mini-btn" onclick="event.stopPropagation();document.getElementById(\'pId\').value=\''+f.id+'\';doConn()">💬</button><button class="mini-btn" onclick="event.stopPropagation();rpsInv(\''+f.id+'\')">🎲</button><button class="mini-btn" onclick="event.stopPropagation();ckInvite(\''+f.id+'\')">♟</button><button class="mini-btn danger" onclick="event.stopPropagation();remFr(\''+f.id+'\')">✕</button><button class="mini-btn danger" onclick="event.stopPropagation();blockU(\''+f.id+'\')">🚫</button></div><div class="dot '+(f.online?'on':'off')+'"></div>';el.appendChild(d)});renderGM()}
+function renderFriends(){const el=document.getElementById('fL2');el.innerHTML='';friendsList.forEach(f=>{const d=document.createElement('div');d.className='p-row';const lastSeen=f.online?'':(f.lastLogin?timeAgo(f.lastLogin):'');d.innerHTML='<span class="av">'+f.avatar+'</span><span class="name">'+f.displayName+' <span class="lvl-badge">LV'+f.level+'</span></span><span class="st">'+(f.online?(f.status?'• '+f.status:''):('<span style="font-size:.6rem;color:var(--td)">'+lastSeen+'</span>'))+'</span><div class="p-row-actions"><button class="mini-btn" onclick="event.stopPropagation();document.getElementById(\'pId\').value=\''+f.id+'\';doConn();toggleP(\'fP\')">💬</button><button class="mini-btn danger" onclick="event.stopPropagation();remFr(\''+f.id+'\')">✕</button><button class="mini-btn danger" onclick="event.stopPropagation();blockU(\''+f.id+'\')">🚫</button></div><div class="dot '+(f.online?'on':'off')+'"></div>';d.onclick=()=>{showProfile(f.id)};el.appendChild(d)});renderGM()}
 function addFriend(){const l=document.getElementById('addFI').value.trim();if(!l||!ws)return;ws.send(JSON.stringify({type:'add_friend',login:l}));document.getElementById('addFI').value=''}
 function addFD(l){if(ws)ws.send(JSON.stringify({type:'add_friend',login:l}))}
 function remFr(l){if(ws)ws.send(JSON.stringify({type:'remove_friend',login:l}))}
 function blockU(l){if(!ws||!confirm('Заблокировать '+l+'?'))return;ws.send(JSON.stringify({type:'block_user',login:l}))}
 function unblockU(l){if(ws)ws.send(JSON.stringify({type:'unblock_user',login:l}))}
 function renderBlocks(){const el=document.getElementById('blL');el.innerHTML='';blockList.forEach(b=>{const d=document.createElement('div');d.className='p-row';d.innerHTML='<span class="name">'+b.displayName+'</span><button class="mini-btn" onclick="unblockU(\''+b.id+'\')">Разблокировать</button>';el.appendChild(d)})}
-function rOL(u){const el=document.getElementById('oL');el.innerHTML='';const fIds=friendsList.map(f=>f.id);u.filter(x=>x.id!==myId&&!x.isGuest).forEach(x=>{const d=document.createElement('div');d.className='p-row';const isFr=fIds.includes(x.id);d.innerHTML='<span class="av">'+(x.avatar||'🐱')+'</span><span class="name">'+x.displayName+' <span class="lvl-badge">LV'+(x.level||1)+'</span> '+(isFr?'<span class="friend-badge">друг</span>':'')+'</span><span class="st">'+(x.status?'• '+x.status:'')+'</span><div class="dot on"></div>';d.onclick=()=>{showProfile(x.id)};el.appendChild(d)})}
+function rOL(u){
+  window._onlineUsers=u;
+  // Update friends online status
+  const onlineIds=new Set(u.map(x=>x.id));
+  friendsList.forEach(f=>{f.online=onlineIds.has(f.id)});
+  // Render online list
+  const el=document.getElementById('oL');el.innerHTML='';const fIds=friendsList.map(f=>f.id);u.filter(x=>x.id!==myId&&!x.isGuest).forEach(x=>{const d=document.createElement('div');d.className='p-row';const isFr=fIds.includes(x.id);d.innerHTML='<span class="av">'+(x.avatar||'🐱')+'</span><span class="name">'+x.displayName+' <span class="lvl-badge">LV'+(x.level||1)+'</span> '+(isFr?'<span class="friend-badge">друг</span>':'')+'</span><span class="st">'+(x.status?'• '+x.status:'')+'</span><div class="dot on"></div>';d.onclick=()=>{showProfile(x.id)};el.appendChild(d)});
+  // Re-render friends if panel open
+  if(document.getElementById('fP').classList.contains('show'))renderFriends();
+}
 function renderGroups(){const el=document.getElementById('gL');el.innerHTML='';groupsList.forEach(g=>{const d=document.createElement('div');d.className='p-row';d.innerHTML='<span class="av">'+g.avatar+'</span><span class="name">'+g.name+'</span><span class="st">'+g.members.length+' чел.</span>';d.onclick=()=>{ensureChat(g.id,g.name,g.avatar,true);switchChat(g.id);toggleP('gP')};el.appendChild(d)})}
 function renderGM(){const el=document.getElementById('grpMemPick');el.innerHTML='';grpSel.clear();friendsList.forEach(f=>{const d=document.createElement('div');d.className='grp-mem';d.textContent=f.avatar+' '+f.displayName;d.onclick=()=>{if(grpSel.has(f.id)){grpSel.delete(f.id);d.classList.remove('sel')}else{grpSel.add(f.id);d.classList.add('sel')}};el.appendChild(d)})}
 function createGroup(){const n=document.getElementById('grpName').value.trim();if(!n||grpSel.size<1)return;ws.send(JSON.stringify({type:'create_group',name:n,members:[...grpSel]}));document.getElementById('grpName').value='';document.getElementById('grpC').classList.remove('show')}
