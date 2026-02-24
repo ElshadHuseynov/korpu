@@ -956,7 +956,7 @@ function escHtml(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').rep
 function sendImage(input){
   if(!input.files||!input.files[0]||!activeChat||!ws)return;
   const file=input.files[0];
-  if(file.size>500*1024){alert('Max 500KB');input.value='';return}
+  if(file.size>1024*1024){alert('Max 1MB');input.value='';return}
   const reader=new FileReader();
   reader.onload=function(e){
     const base64=e.target.result;
