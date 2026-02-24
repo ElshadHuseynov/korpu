@@ -2587,6 +2587,7 @@ let pong = null; // game state
 let pongLastSyncT = 0;      // last time host sent state
 let pongRemote = null;       // last received state from host (guest side)
 let pongRemoteT = 0;         // timestamp of last received state
+let pongLastPaddleSendT = 0; // throttle paddle messages
 
 function pongMakeState() {
   return {
@@ -2625,11 +2626,15 @@ function pongHandleWsMsg(data, from, fromName) {
     if (pong && !pongIsHost) {
       pongRemote = { bx: data.bx, by: data.by, vx: data.vx, vy: data.vy };
       pongRemoteT = performance.now();
-      // Sync actual physics velocity
-      pong.vx = data.vx; pong.vy = data.vy;
+      // Host paddle position is authoritative (included in state now)
+      if (data.p1y !== undefined) pong.p1y = data.p1y;
+      // Scores always come from host
       pong.s1 = data.s1; pong.s2 = data.s2;
-      // On first packet, snap display position
-      if (pong.dbx === PONG_W / 2 && pong.dby === PONG_H / 2) {
+      // Hard snap if local sim drifted too far from host (>80px)
+      const drift = Math.sqrt((pong.bx - data.bx) ** 2 + (pong.by - data.by) ** 2);
+      if (drift > 80) {
+        pong.bx = data.bx; pong.by = data.by;
+        pong.vx = data.vx; pong.vy = data.vy;
         pong.dbx = data.bx; pong.dby = data.by;
       }
       pongUpdateScore();
@@ -2691,8 +2696,11 @@ function pongAttachInput() {
 function pongSendPaddle() {
   if (!pongOpponent) return;
   const y = pongIsHost ? pong.p1y : pong.p2y;
-  if (Math.abs(y - (pongLastPaddleY || 0)) < 2) return;
+  const now = performance.now();
+  if (Math.abs(y - (pongLastPaddleY || 0)) < 5) return;
+  if (now - pongLastPaddleSendT < 150) return;
   pongLastPaddleY = y;
+  pongLastPaddleSendT = now;
   pongSendMsg(pongOpponent, { __pong: 'paddle', y });
 }
 
@@ -2700,42 +2708,45 @@ function pongLoop() {
   if (!pong) return;
   pongAnimId = requestAnimationFrame(pongLoop);
 
-  if (pong.running && pongIsHost) {
+  if (pong.running) {
+    // Both host AND guest run local physics — no freeze, always smooth
     pongTick();
-    // Sync state to guest at ~30 Hz (every 33ms)
-    const now = performance.now();
-    if (now - pongLastSyncT > 33) {
-      pongLastSyncT = now;
-      pongSendMsg(pongOpponent, {
-        __pong: 'state',
-        bx: Math.round(pong.bx * 10) / 10,
-        by: Math.round(pong.by * 10) / 10,
-        vx: Math.round(pong.vx * 100) / 100,
-        vy: Math.round(pong.vy * 100) / 100,
-        s1: pong.s1, s2: pong.s2
-      });
+
+    if (pongIsHost) {
+      // Sync authoritative state at ~10 Hz (100ms) — less flooding
+      const now = performance.now();
+      if (now - pongLastSyncT > 100) {
+        pongLastSyncT = now;
+        pongSendMsg(pongOpponent, {
+          __pong: 'state',
+          bx: Math.round(pong.bx * 10) / 10,
+          by: Math.round(pong.by * 10) / 10,
+          vx: Math.round(pong.vx * 100) / 100,
+          vy: Math.round(pong.vy * 100) / 100,
+          p1y: Math.round(pong.p1y),
+          p2y: Math.round(pong.p2y),
+          s1: pong.s1, s2: pong.s2
+        });
+      }
+    } else if (pongRemote) {
+      // Guest: gently drift local sim toward host state (correction, not hard reset)
+      const age = performance.now() - pongRemoteT;
+      if (age < 400) {
+        const alpha = 0.15;
+        pong.bx += (pongRemote.bx - pong.bx) * alpha;
+        pong.by += (pongRemote.by - pong.by) * alpha;
+        // Correct velocity only if significantly off
+        if (Math.abs(pong.vx - pongRemote.vx) > 0.8 || Math.abs(pong.vy - pongRemote.vy) > 0.8) {
+          pong.vx += (pongRemote.vx - pong.vx) * 0.25;
+          pong.vy += (pongRemote.vy - pong.vy) * 0.25;
+        }
+      }
     }
   }
 
-  // Guest dead-reckoning: predict ball position between host updates
-  if (!pongIsHost && pongRemote) {
-    const dt = (performance.now() - pongRemoteT) / 1000; // seconds since last sync
-    const fps = 60;
-    // Predict where ball would be now based on last known velocity
-    let pbx = pongRemote.bx + pongRemote.vx * dt * fps;
-    let pby = pongRemote.by + pongRemote.vy * dt * fps;
-    // Simple wall clamp (no bounce prediction, just clamp)
-    pbx = Math.max(PONG_BALL_R, Math.min(PONG_W - PONG_BALL_R, pbx));
-    pby = Math.max(PONG_BALL_R, Math.min(PONG_H - PONG_BALL_R, pby));
-    // Smooth lerp to predicted position (reduces jitter)
-    pong.dbx += (pbx - pong.dbx) * 0.35;
-    pong.dby += (pby - pong.dby) * 0.35;
-  } else if (pongIsHost) {
-    // Host: display = actual position
-    pong.dbx = pong.bx;
-    pong.dby = pong.by;
-  }
-
+  // Display = actual (physics runs locally, no separate lerp needed)
+  pong.dbx = pong.bx;
+  pong.dby = pong.by;
   pongDraw();
 }
 
@@ -2773,18 +2784,25 @@ function pongTick() {
     }
   }
 
-  // Scoring
-  if (pong.bx < 0) {
-    pong.s2++;
-    pongUpdateScore();
-    if (pong.s2 >= PONG_WIN_SCORE) { pongHostDeclareEnd('guest'); return; }
-    pongResetBall(-1);
-  }
-  if (pong.bx > PONG_W) {
-    pong.s1++;
-    pongUpdateScore();
-    if (pong.s1 >= PONG_WIN_SCORE) { pongHostDeclareEnd('host'); return; }
-    pongResetBall(1);
+  // Scoring — host is authoritative, guest just pauses ball at edges
+  if (pongIsHost) {
+    if (pong.bx < 0) {
+      pong.s2++;
+      pongUpdateScore();
+      if (pong.s2 >= PONG_WIN_SCORE) { pongHostDeclareEnd('guest'); return; }
+      pongResetBall(-1);
+    }
+    if (pong.bx > PONG_W) {
+      pong.s1++;
+      pongUpdateScore();
+      if (pong.s1 >= PONG_WIN_SCORE) { pongHostDeclareEnd('host'); return; }
+      pongResetBall(1);
+    }
+  } else {
+    // Guest: pause ball if it exits — host state sync will reset it properly
+    if (pong.bx < -10 || pong.bx > PONG_W + 10) {
+      pong.vx = 0; pong.vy = 0;
+    }
   }
 }
 
