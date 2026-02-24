@@ -534,7 +534,7 @@ function applyLang(){
     const mc=document.getElementById('menuCoins');if(mc)mc.textContent='🪙 '+myCoins+' '+t('coins');
     const lo=document.getElementById('menuLogout');if(lo)lo.textContent=t('logout')||'Выйти';
     let h='';
-    h+='<div class="menu-acc" onclick="toggleMenuSec(\'ms1\')">';
+    h+='<div class="menu-acc" data-sec="ms1">';
     h+='<span>💬 '+(t('social')||'ОБЩЕНИЕ')+'</span><span class="menu-acc-arr" id="ms1arr">▸</span></div>';
     h+='<div class="menu-sec" id="ms1">';
     h+='<div class="menu-item" onclick="toggleMenu();toggleP(\'oP\')"><span class="mi-icon">👥</span> '+t('onlineList')+'</div>';
@@ -544,7 +544,7 @@ function applyLang(){
     h+='<div class="menu-item" onclick="toggleMenu();toggleP(\'sP\')"><span class="mi-icon">🔍</span> '+t('search')+'</div>';
     h+='</div>';
 
-    h+='<div class="menu-acc" onclick="toggleMenuSec(\'ms2\')">';
+    h+='<div class="menu-acc" data-sec="ms2">';
     h+='<span>🎮 '+(t('entertainment')||'РАЗВЛЕЧЕНИЯ')+'</span><span class="menu-acc-arr" id="ms2arr">▸</span></div>';
     h+='<div class="menu-sec" id="ms2">';
     h+='<div class="menu-item" onclick="toggleMenu();openDailyQuests()"><span class="mi-icon">🎯</span> '+(t('dailyQuests')||'Задания')+'</div>';
@@ -556,7 +556,7 @@ function applyLang(){
     h+='<div class="menu-item" onclick="toggleMenu();openLB()"><span class="mi-icon">🏆</span> '+t('leaderboard')+'</div>';
     h+='</div>';
 
-    h+='<div class="menu-acc" onclick="toggleMenuSec(\'ms3\')">';
+    h+='<div class="menu-acc" data-sec="ms3">';
     h+='<span>⚙️ '+(t('settings')||'НАСТРОЙКИ')+'</span><span class="menu-acc-arr" id="ms3arr">▸</span></div>';
     h+='<div class="menu-sec" id="ms3">';
     h+='<div class="menu-item" onclick="toggleMenu();toggleP(\'stP\')"><span class="mi-icon">⚡</span> '+t('setStatus')+'</div>';
