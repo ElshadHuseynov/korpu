@@ -2131,7 +2131,7 @@ window.addEventListener('load',()=>{
 if(window.Telegram&&Telegram.WebApp){const tg=Telegram.WebApp;tg.expand();tg.setHeaderColor('#0a0a0f');tg.setBackgroundColor('#0a0a0f');try{tg.requestFullscreen()}catch(e){}function sa(){const s=tg.safeAreaInset||{},c=tg.contentSafeAreaInset||{};const top=38+Math.max(s.top||0,c.top||0);document.querySelector('.app').style.paddingTop=top+'px';const sm=document.getElementById('sideMenu');if(sm)sm.style.paddingTop=top+'px'}sa();tg.onEvent('safeAreaChanged',sa);tg.onEvent('contentSafeAreaChanged',sa);tg.onEvent('fullscreenChanged',sa)}
 setTimeout(()=>document.getElementById('splash').classList.add('hidden'),1800);initE();initAP();applyLang();setTheme(curTheme);renderThemeDots();
 const s=localStorage.getItem('kc');if(s){const c=JSON.parse(s);document.getElementById('savedInfo').style.display='';document.getElementById('savedU').textContent=c.l}
-document.addEventListener('click',e=>{if(!e.target.closest('.ep')&&!e.target.closest('.ib'))document.getElementById('eP').classList.remove('show')})});
+document.addEventListener('click',e=>{if(!e.target.closest('.ep')&&!e.target.closest('.ib')&&!e.target.closest('.attach-opt'))document.getElementById('eP').classList.remove('show')})});
 </script></body></html>
 
 </script>
