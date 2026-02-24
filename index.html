@@ -874,6 +874,23 @@ function applyChatTheme(){
   mc.className='msa chat-theme-'+chatTheme;
 }
 function openThemePicker(){
+  const themes=[
+    {id:0,name:'Default',colors:['#00e5a0','#643cff']},
+    {id:1,name:'Purple',colors:['#643cff','#ff4d6a']},
+    {id:2,name:'Ocean',colors:['#3b82f6','#22c55e']},
+    {id:3,name:'Sunset',colors:['#fbbf24','#ef4444']},
+    {id:4,name:'Rose',colors:['#ec4899','#a78bfa']}
+  ];
+  const md=document.getElementById('modalText');const mt=document.getElementById('modalTitle');
+  mt.textContent='🎨 '+(t('chatTheme')||'Chat Theme');
+  let h='<div class="theme-picker">';
+  themes.forEach(th=>{
+    h+='<div class="theme-dot'+(chatTheme===th.id?' active':'')+'" onclick="setChatTheme('+th.id+')" style="background:linear-gradient(135deg,'+th.colors[0]+','+th.colors[1]+')"></div>';
+  });
+  h+='</div>';
+  md.innerHTML=h;
+  document.getElementById('modalBg').classList.add('show');
+}
 
 // === DAILY QUESTS ===
 function openDailyQuests(){
@@ -988,23 +1005,6 @@ function sendFeedComment(id){
   const inp=document.getElementById('feedCI_'+id);if(!inp)return;
   const txt=inp.value.trim();if(!txt||!ws)return;
   ws.send(JSON.stringify({type:'feed_comment',postId:id,text:txt}));inp.value='';
-}
-  const themes=[
-    {id:0,name:'Default',colors:['#00e5a0','#643cff']},
-    {id:1,name:'Purple',colors:['#643cff','#ff4d6a']},
-    {id:2,name:'Ocean',colors:['#3b82f6','#22c55e']},
-    {id:3,name:'Sunset',colors:['#fbbf24','#ef4444']},
-    {id:4,name:'Rose',colors:['#ec4899','#a78bfa']}
-  ];
-  const md=document.getElementById('modalText');const mt=document.getElementById('modalTitle');
-  mt.textContent='🎨 '+(t('chatTheme')||'Chat Theme');
-  let h='<div class="theme-picker">';
-  themes.forEach(th=>{
-    h+='<div class="theme-dot'+(chatTheme===th.id?' active':'')+'" onclick="setChatTheme('+th.id+')" style="background:linear-gradient(135deg,'+th.colors[0]+','+th.colors[1]+')"></div>';
-  });
-  h+='</div>';
-  md.innerHTML=h;
-  document.getElementById('modalBg').classList.add('show');
 }
 function setChatTheme(id){
   chatTheme=id;localStorage.setItem('kp_chatTheme',id);
