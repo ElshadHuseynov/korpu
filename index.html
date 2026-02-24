@@ -2584,17 +2584,20 @@ const PONG_BALL_R = 8;
 const PONG_WIN_SCORE = 7;
 
 let pong = null; // game state
+let pongLastSyncT = 0;      // last time host sent state
+let pongRemote = null;       // last received state from host (guest side)
+let pongRemoteT = 0;         // timestamp of last received state
 
 function pongMakeState() {
   return {
-    // ball center in px
     bx: PONG_W / 2, by: PONG_H / 2,
-    // velocity px/frame (60fps)
-    vx: (Math.random() > 0.5 ? 1 : -1) * 4.5,
-    vy: (Math.random() > 0.5 ? 1 : -1) * 3,
-    // paddle Y center (0..PONG_H)
-    p1y: PONG_H / 2, // left = host
-    p2y: PONG_H / 2, // right = guest
+    // SLOW initial speed — 2px/frame @60fps
+    vx: (Math.random() > 0.5 ? 1 : -1) * 2,
+    vy: (Math.random() > 0.5 ? 1 : -1) * 1.4,
+    // display positions (smooth lerp targets on guest)
+    dbx: PONG_W / 2, dby: PONG_H / 2,
+    p1y: PONG_H / 2,
+    p2y: PONG_H / 2,
     s1: 0, s2: 0,
     running: true
   };
@@ -2620,9 +2623,15 @@ function pongHandleWsMsg(data, from, fromName) {
     }
   } else if (data.__pong === 'state') {
     if (pong && !pongIsHost) {
-      pong.bx = data.bx; pong.by = data.by;
+      pongRemote = { bx: data.bx, by: data.by, vx: data.vx, vy: data.vy };
+      pongRemoteT = performance.now();
+      // Sync actual physics velocity
       pong.vx = data.vx; pong.vy = data.vy;
       pong.s1 = data.s1; pong.s2 = data.s2;
+      // On first packet, snap display position
+      if (pong.dbx === PONG_W / 2 && pong.dby === PONG_H / 2) {
+        pong.dbx = data.bx; pong.dby = data.by;
+      }
       pongUpdateScore();
     }
   } else if (data.__pong === 'end') {
@@ -2637,25 +2646,17 @@ function pongStartGame() {
   const bg = document.getElementById('pongBg');
   bg.classList.add('show');
   pong = pongMakeState();
-  // only host randomizes ball direction
-  if (!pongIsHost) { pong.vx = 0; pong.vy = 0; }
+  pongRemote = null; pongRemoteT = 0;
+  // Guest starts with ball stationary — receives pos from host
+  if (!pongIsHost) { pong.vx = 0; pong.vy = 0; pong.dbx = PONG_W/2; pong.dby = PONG_H/2; }
   pongUpdateScore();
-  pongSetStatus(pongIsHost ? '⬤ Вы слева' : '⬤ Вы справа');
+  pongSetStatus(pongIsHost ? '🟢 Вы — левая ракетка' : '🟣 Вы — правая ракетка');
+  pongLastPaddleY = null; pongTouchY = null;
   pongAttachInput();
   if (pongAnimId) cancelAnimationFrame(pongAnimId);
+  if (pongSyncInterval) { clearInterval(pongSyncInterval); pongSyncInterval = null; }
+  pongLastSyncT = 0;
   pongLoop();
-  if (pongSyncInterval) clearInterval(pongSyncInterval);
-  if (pongIsHost) {
-    pongSyncInterval = setInterval(() => {
-      if (!pong || !pong.running) return;
-      pongSendMsg(pongOpponent, {
-        __pong: 'state',
-        bx: pong.bx, by: pong.by,
-        vx: pong.vx, vy: pong.vy,
-        s1: pong.s1, s2: pong.s2
-      });
-    }, 50);
-  }
 }
 
 let pongLastPaddleY = null;
@@ -2698,7 +2699,43 @@ function pongSendPaddle() {
 function pongLoop() {
   if (!pong) return;
   pongAnimId = requestAnimationFrame(pongLoop);
-  if (pong.running && pongIsHost) pongTick();
+
+  if (pong.running && pongIsHost) {
+    pongTick();
+    // Sync state to guest at ~30 Hz (every 33ms)
+    const now = performance.now();
+    if (now - pongLastSyncT > 33) {
+      pongLastSyncT = now;
+      pongSendMsg(pongOpponent, {
+        __pong: 'state',
+        bx: Math.round(pong.bx * 10) / 10,
+        by: Math.round(pong.by * 10) / 10,
+        vx: Math.round(pong.vx * 100) / 100,
+        vy: Math.round(pong.vy * 100) / 100,
+        s1: pong.s1, s2: pong.s2
+      });
+    }
+  }
+
+  // Guest dead-reckoning: predict ball position between host updates
+  if (!pongIsHost && pongRemote) {
+    const dt = (performance.now() - pongRemoteT) / 1000; // seconds since last sync
+    const fps = 60;
+    // Predict where ball would be now based on last known velocity
+    let pbx = pongRemote.bx + pongRemote.vx * dt * fps;
+    let pby = pongRemote.by + pongRemote.vy * dt * fps;
+    // Simple wall clamp (no bounce prediction, just clamp)
+    pbx = Math.max(PONG_BALL_R, Math.min(PONG_W - PONG_BALL_R, pbx));
+    pby = Math.max(PONG_BALL_R, Math.min(PONG_H - PONG_BALL_R, pby));
+    // Smooth lerp to predicted position (reduces jitter)
+    pong.dbx += (pbx - pong.dbx) * 0.35;
+    pong.dby += (pby - pong.dby) * 0.35;
+  } else if (pongIsHost) {
+    // Host: display = actual position
+    pong.dbx = pong.bx;
+    pong.dby = pong.by;
+  }
+
   pongDraw();
 }
 
@@ -2713,25 +2750,26 @@ function pongTick() {
 
   // Left paddle (host, p1)
   const p1x = PONG_PAD_MARGIN + PONG_PAD_W;
-  if (pong.bx - PONG_BALL_R <= p1x && pong.bx - PONG_BALL_R >= PONG_PAD_MARGIN && pong.vx < 0) {
+  if (pong.bx - PONG_BALL_R <= p1x && pong.bx - PONG_BALL_R >= PONG_PAD_MARGIN - 2 && pong.vx < 0) {
     if (Math.abs(pong.by - pong.p1y) < PONG_PAD_H / 2 + PONG_BALL_R) {
-      pong.bx = p1x + PONG_BALL_R;
-      const hit = (pong.by - pong.p1y) / (PONG_PAD_H / 2);
-      pong.vx = Math.abs(pong.vx) * 1.04;
-      pong.vy = hit * 6;
-      pong.vx = Math.min(pong.vx, 14);
+      pong.bx = p1x + PONG_BALL_R + 1;
+      const hit = (pong.by - pong.p1y) / (PONG_PAD_H / 2); // -1..1
+      // Gentle speed increase: max 7px/frame
+      const spd = Math.min(Math.abs(pong.vx) * 1.06 + 0.1, 7);
+      pong.vx = spd;
+      pong.vy = hit * 3.5; // moderate spin
     }
   }
 
   // Right paddle (guest, p2)
   const p2x = PONG_W - PONG_PAD_MARGIN - PONG_PAD_W;
-  if (pong.bx + PONG_BALL_R >= p2x && pong.bx + PONG_BALL_R <= PONG_W - PONG_PAD_MARGIN && pong.vx > 0) {
+  if (pong.bx + PONG_BALL_R >= p2x && pong.bx + PONG_BALL_R <= PONG_W - PONG_PAD_MARGIN + 2 && pong.vx > 0) {
     if (Math.abs(pong.by - pong.p2y) < PONG_PAD_H / 2 + PONG_BALL_R) {
-      pong.bx = p2x - PONG_BALL_R;
+      pong.bx = p2x - PONG_BALL_R - 1;
       const hit = (pong.by - pong.p2y) / (PONG_PAD_H / 2);
-      pong.vx = -Math.abs(pong.vx) * 1.04;
-      pong.vy = hit * 6;
-      pong.vx = Math.max(pong.vx, -14);
+      const spd = Math.min(Math.abs(pong.vx) * 1.06 + 0.1, 7);
+      pong.vx = -spd;
+      pong.vy = hit * 3.5;
     }
   }
 
@@ -2753,8 +2791,14 @@ function pongTick() {
 function pongResetBall(dir) {
   if (!pong) return;
   pong.bx = PONG_W / 2; pong.by = PONG_H / 2;
-  pong.vx = dir * 4.5;
-  pong.vy = (Math.random() > 0.5 ? 1 : -1) * 3;
+  pong.dbx = PONG_W / 2; pong.dby = PONG_H / 2;
+  // Short pause before launch: set vel to 0 then start after 800ms
+  pong.vx = 0; pong.vy = 0;
+  setTimeout(() => {
+    if (!pong) return;
+    pong.vx = dir * 2;
+    pong.vy = (Math.random() > 0.5 ? 1 : -1) * 1.4;
+  }, 800);
 }
 
 function pongHostDeclareEnd(winner) {
@@ -2858,26 +2902,37 @@ function pongDraw() {
   pRRect(padX2, pong.p2y - PONG_PAD_H/2, PONG_PAD_W, PONG_PAD_H, 6);
   ctx.fill();
 
-  // Ball
-  const bGrad = ctx.createRadialGradient(pong.bx - 2, pong.by - 2, 1, pong.bx, pong.by, PONG_BALL_R);
+  // Ball — use display position (dbx/dby) for smooth rendering
+  const bx = pong.dbx, by = pong.dby;
+  // Ball trail (motion blur effect)
+  const speed = Math.sqrt(pong.vx * pong.vx + pong.vy * pong.vy);
+  if (speed > 0.5) {
+    ctx.globalAlpha = 0.15;
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(bx - pong.vx * 2, by - pong.vy * 2, PONG_BALL_R * 0.7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+  const bGrad = ctx.createRadialGradient(bx - 2, by - 2, 1, bx, by, PONG_BALL_R);
   bGrad.addColorStop(0, '#ffffff');
   bGrad.addColorStop(0.5, '#e8e8ec');
   bGrad.addColorStop(1, 'rgba(200,200,200,.8)');
   ctx.fillStyle = bGrad;
   ctx.shadowColor = '#fff';
-  ctx.shadowBlur = 16;
+  ctx.shadowBlur = 14;
   ctx.beginPath();
-  ctx.arc(pong.bx, pong.by, PONG_BALL_R, 0, Math.PI * 2);
+  ctx.arc(bx, by, PONG_BALL_R, 0, Math.PI * 2);
   ctx.fill();
   ctx.shadowBlur = 0;
 
   // Player labels
-  ctx.font = '500 11px Outfit, sans-serif';
-  ctx.fillStyle = pongIsHost ? '#00e5a0' : 'rgba(0,229,160,.4)';
+  ctx.font = '600 11px Outfit, sans-serif';
+  ctx.fillStyle = pongIsHost ? '#00e5a0' : 'rgba(0,229,160,.35)';
   ctx.fillText('ВЫ', padX1 + PONG_PAD_W + 6, 18);
-  ctx.fillStyle = !pongIsHost ? '#a78bfa' : 'rgba(167,139,250,.4)';
+  ctx.fillStyle = !pongIsHost ? '#a78bfa' : 'rgba(167,139,250,.35)';
   ctx.textAlign = 'right';
-  ctx.fillText('ВЫ', W - padX2 + PONG_PAD_W - 6, 18);
+  ctx.fillText('ВЫ', W - PONG_PAD_MARGIN - 6, 18);
   ctx.textAlign = 'left';
 }
 
