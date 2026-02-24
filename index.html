@@ -814,6 +814,8 @@ function showChat(){document.getElementById('authScr').style.display='none';docu
   document.getElementById('menuLg').textContent=isG?'(аноним)':'@'+myId;
   updateXP();applyChatTheme();requestNotifPermission()}
 function toggleMenu(){document.getElementById('sideMenu').classList.toggle('show');document.getElementById('menuOv').classList.toggle('show')}
+function toggleMenuSec(id){var s=document.getElementById(id);var a=document.getElementById(id+'arr');if(s){s.classList.toggle('open')}if(a){a.classList.toggle('open')}}
+document.addEventListener('click',function(e){var el=e.target.closest('.menu-acc');if(el&&el.dataset.sec){toggleMenuSec(el.dataset.sec)}});
 
 // BOTTOM NAV
 function navTo(tab){
